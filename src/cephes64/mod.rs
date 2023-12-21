@@ -19,3 +19,7 @@ mod ellik;
 pub use crate::cephes64::ellik::ellik;
 mod ellie;
 pub use crate::cephes64::ellie::ellie;
+mod j0;
+pub use crate::cephes64::j0::{j0, y0};
+mod j1;
+pub use crate::cephes64::j1::{j1, y1};
