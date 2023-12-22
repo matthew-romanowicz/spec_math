@@ -97,47 +97,47 @@ static C1: f64 = 1.3862943611198906188E0;
 //$$K(m) = \int_{0}^{\pi / 2} \frac{d\theta}{\sqrt{1 - m\,\sin^2(\theta)}}$$
 
 pub fn ellpk(x: f64) -> f64 {
-//! Complete elliptic integral of the first kind evaluated at `1.0 - x`
-//!
-//! ## Description:
-//!
-//! Approximates the integral
-//!
-#![doc=include_str!("ellpk.svg")]
-//!
-//! where `m = 1 - x`, using the approximation `P(x) - ln(x) * Q(x)`
-//!
-//! The argument `x` is used internally rather than `m` so that the logarithmic singularity at `m = 1` will be shifted to the origin; this preserves maximum accuracy.
-//!
-//! ## Accuracy:
-//!
-//! Relative Error:
-//!<table>
-//! <tr>
-//!     <th>Arithmetic</th>
-//!     <th>Domain</th>
-//!     <th># Trials</th>
-//!     <th>Peak</th>
-//!     <th>RMS</th>
-//! </tr>
-//! <tr>
-//!     <td>IEEE</td>
-//!     <td>0, 1</td>
-//!     <td>30000</td>
-//!     <td>2.5e-16</td>
-//!     <td>6.8e-17</td>
-//! </tr>
-//!</table>
-//!
-//! ## Examples
-//! 
-//! ```rust
-//! use spec_math::cephes64::ellpk;
-//!
-//! let x = 0.0;
-//! 
-//! assert_eq!(ellpk(1.0 - x), std::f64::consts::PI * 0.5);
-//! ```
+    //! Complete elliptic integral of the first kind evaluated at `1.0 - x`
+    //!
+    //! ## Description:
+    //!
+    //! Approximates the integral
+    //!
+    #![doc=include_str!("ellpk.svg")]
+    //!
+    //! where `m = 1 - x`, using the approximation `P(x) - ln(x) * Q(x)`
+    //!
+    //! The argument `x` is used internally rather than `m` so that the logarithmic singularity at `m = 1` will be shifted to the origin; this preserves maximum accuracy.
+    //!
+    //! ## Accuracy:
+    //!
+    //! Relative Error:
+    //!<table>
+    //! <tr>
+    //!     <th>Arithmetic</th>
+    //!     <th>Domain</th>
+    //!     <th># Trials</th>
+    //!     <th>Peak</th>
+    //!     <th>RMS</th>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>0, 1</td>
+    //!     <td>30000</td>
+    //!     <td>2.5e-16</td>
+    //!     <td>6.8e-17</td>
+    //! </tr>
+    //!</table>
+    //!
+    //! ## Examples
+    //! 
+    //! ```rust
+    //! use spec_math::cephes64::ellpk;
+    //!
+    //! let x = 0.0;
+    //! 
+    //! assert_eq!(ellpk(1.0 - x), std::f64::consts::PI * 0.5);
+    //! ```
     if x < 0.0 {
         //sf_error("ellpk", SF_ERROR_DOMAIN, NULL);
         f64::NAN

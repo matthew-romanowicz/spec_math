@@ -60,11 +60,29 @@ pub trait Bessel {
     /// Bessel function of the second kind, order zero
     fn bessel_y0(&self) -> Self;
 
+    /// Modified Bessel function of order zero
+    fn bessel_i0(&self) -> Self;
+
+    /// Modified Bessel function of order zero, exponentially scaled
+    fn bessel_i0e(&self) -> Self;
+
     /// Bessel function of the first kind, order one
     fn bessel_j1(&self) -> Self;
 
     /// Bessel function of the second kind, order one
     fn bessel_y1(&self) -> Self;
+
+    /// Modified Bessel function of order one
+    fn bessel_i1(&self) -> Self;
+
+    /// Modified Bessel function of order one, exponentially scaled
+    fn bessel_i1e(&self) -> Self;
+
+    /// Modified Bessel function of the third kind, order zero
+    fn bessel_k0(&self) -> Self;
+
+    /// Modified Bessel function of the third kind, order zero exponentially scaled
+    fn bessel_k0e(&self) -> Self;
 }
 
 impl Bessel for f64 {
@@ -76,6 +94,14 @@ impl Bessel for f64 {
         //! Uses [`cephes64::y0`](crate::cephes64::y0)
         crate::cephes64::y0(*self)
     }
+    fn bessel_i0(&self) -> f64 {
+        //! Uses [`cephes64::i0`](crate::cephes64::i0)
+        crate::cephes64::i0(*self)
+    }
+    fn bessel_i0e(&self) -> f64 {
+        //! Uses [`cephes64::i0e`](crate::cephes64::i0e)
+        crate::cephes64::i0e(*self)
+    }
     fn bessel_j1(&self) -> f64 {
         //! Uses [`cephes64::j1`](crate::cephes64::j1)
         crate::cephes64::j1(*self)
@@ -83,5 +109,21 @@ impl Bessel for f64 {
     fn bessel_y1(&self) -> f64 {
         //! Uses [`cephes64::y1`](crate::cephes64::y1)
         crate::cephes64::y1(*self)
+    }
+    fn bessel_i1(&self) -> f64 {
+        //! Uses [`cephes64::i1`](crate::cephes64::i1)
+        crate::cephes64::i1(*self)
+    }
+    fn bessel_i1e(&self) -> f64 {
+        //! Uses [`cephes64::i1e`](crate::cephes64::i1e)
+        crate::cephes64::i1e(*self)
+    }
+    fn bessel_k0(&self) -> f64 {
+        //! Uses [`cephes64::k0`](crate::cephes64::k0)
+        crate::cephes64::k0(*self)
+    }
+    fn bessel_k0e(&self) -> f64 {
+        //! Uses [`cephes64::k0e`](crate::cephes64::k0e)
+        crate::cephes64::k0e(*self)
     }
 }

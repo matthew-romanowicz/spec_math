@@ -182,40 +182,40 @@ use super::consts::{M_2_PI, M_PI_4, SQ2OPI};
 use super::polevl::{polevl, p1evl};
 
 pub fn j0(x: f64) -> f64 {
-//! Bessel function of the first kind, order zero
-//! 
-//! ## DESCRIPTION:
-//!
-//! Returns Bessel function of the first kind, order zero, of the argument.
-//!
-//! The domain is divided into the intervals `[0, 5]` and `(5, infinity)`. In the first interval the following rational approximation is used:
-//!
-//!
-#![doc=include_str!("j0.svg")]
-//!
-//! where w = x<sup>2</sup>  and the two r's are zeros of the function.
-//!
-//! In the second interval, the Hankel asymptotic expansion is employed with two rational functions of degree 6/6 and 7/7.
-//!
-//! ## ACCURACY:
-//!
-//! Absolute Error:
-//!<table>
-//! <tr>
-//!     <th>Arithmetic</th>
-//!     <th>Domain</th>
-//!     <th># Trials</th>
-//!     <th>Peak</th>
-//!     <th>RMS</th>
-//! </tr>
-//! <tr>
-//!     <td>IEEE</td>
-//!     <td>0, 30</td>
-//!     <td>60000</td>
-//!     <td>4.2e-16</td>
-//!     <td>1.1e-16</td>
-//! </tr>
-//!</table>
+    //! Bessel function of the first kind, order zero
+    //! 
+    //! ## DESCRIPTION:
+    //!
+    //! Returns Bessel function of the first kind, order zero, of the argument.
+    //!
+    //! The domain is divided into the intervals `[0, 5]` and `(5, infinity)`. In the first interval the following rational approximation is used:
+    //!
+    //!
+    #![doc=include_str!("j0.svg")]
+    //!
+    //! where w = x<sup>2</sup>  and the two r's are zeros of the function.
+    //!
+    //! In the second interval, the Hankel asymptotic expansion is employed with two rational functions of degree 6/6 and 7/7.
+    //!
+    //! ## ACCURACY:
+    //!
+    //! Absolute Error:
+    //!<table>
+    //! <tr>
+    //!     <th>Arithmetic</th>
+    //!     <th>Domain</th>
+    //!     <th># Trials</th>
+    //!     <th>Peak</th>
+    //!     <th>RMS</th>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>0, 30</td>
+    //!     <td>60000</td>
+    //!     <td>4.2e-16</td>
+    //!     <td>1.1e-16</td>
+    //! </tr>
+    //!</table>
 
     let x = x.abs();
 
@@ -249,44 +249,44 @@ pub fn j0(x: f64) -> f64 {
 
 pub fn y0(x: f64) -> f64
 {
-//! Bessel function of the second kind, order zero
-//!
-//! ## DESCRIPTION:
-//!
-//! Returns Bessel function of the second kind, of order
-//! zero, of the argument.
-//!
-//! The domain is divided into the intervals [0, 5] and
-//! (5, infinity). In the first interval a rational approximation
-//! R(x) is employed to compute
-//! 
-//! `y0(x)  = R(x)  +   2 * log(x) * j0(x) / M_PI`
-//!
-//! Thus a call to [`cephes64::j0`](crate::cephes64::j0) is required.
-//!
-//! In the second interval, the Hankel asymptotic expansion
-//! is employed with two rational functions of degree 6/6
-//! and 7/7.
-//!
-//! ## ACCURACY:
-//!
-//! Absolute error, when `y0(x) < 1`; else relative error:
-//!<table>
-//! <tr>
-//!     <th>Arithmetic</th>
-//!     <th>Domain</th>
-//!     <th># Trials</th>
-//!     <th>Peak</th>
-//!     <th>RMS</th>
-//! </tr>
-//! <tr>
-//!     <td>IEEE</td>
-//!     <td>0, 30</td>
-//!     <td>30000</td>
-//!     <td>1.3e-15</td>
-//!     <td>1.6e-16</td>
-//! </tr>
-//!</table>
+    //! Bessel function of the second kind, order zero
+    //!
+    //! ## DESCRIPTION:
+    //!
+    //! Returns Bessel function of the second kind, of order
+    //! zero, of the argument.
+    //!
+    //! The domain is divided into the intervals [0, 5] and
+    //! (5, infinity). In the first interval a rational approximation
+    //! R(x) is employed to compute
+    //! 
+    //! `y0(x)  = R(x)  +   2 * log(x) * j0(x) / M_PI`
+    //!
+    //! Thus a call to [`cephes64::j0`](crate::cephes64::j0) is required.
+    //!
+    //! In the second interval, the Hankel asymptotic expansion
+    //! is employed with two rational functions of degree 6/6
+    //! and 7/7.
+    //!
+    //! ## ACCURACY:
+    //!
+    //! Absolute error, when `y0(x) < 1`; else relative error:
+    //!<table>
+    //! <tr>
+    //!     <th>Arithmetic</th>
+    //!     <th>Domain</th>
+    //!     <th># Trials</th>
+    //!     <th>Peak</th>
+    //!     <th>RMS</th>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>0, 30</td>
+    //!     <td>30000</td>
+    //!     <td>1.3e-15</td>
+    //!     <td>1.6e-16</td>
+    //! </tr>
+    //!</table>
 
     if x <= 5.0 {
         if x == 0.0 {

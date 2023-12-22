@@ -90,3 +90,16 @@ pub fn p1evl(x: f64, coef: &[f64], n: usize) -> f64
     }
     ans
 }
+
+#[cfg(test)]
+mod polevl_tests {
+    use super::*;
+
+    #[test]
+    fn polevl_test() {
+        let coefs = [2.0, 3.0, 4.0];
+        assert_eq!(polevl(1.0, &coefs, 1), 5.0);
+        assert_eq!(polevl(1.0, &coefs, 2), 9.0);
+        assert_eq!(polevl(2.0, &coefs, 2), 18.0);
+    }
+}

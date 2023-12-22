@@ -64,42 +64,42 @@ use super::ellpe::ellpe;
 //$$E(\varphi, m) = \int_{0}^{\varphi} \sqrt{1 - m\,\sin^2(\theta)} \,d\theta$$
 
 pub fn ellie(phi: f64, m: f64) -> f64 {
-//! Incomplete elliptic integral of the second kind
-//!
-//! ## Description
-//! Approximates the integral 
-//!
-#![doc=include_str!("ellie.svg")]
-//!
-//! of amplitude `phi` and modulus `m`, using the arithmetic - geometric mean algorithm.
-//!
-//! Returns `NAN` if either input is `NAN` or if `m > 1.0`.
-//!
-//! Returns `phi` if `phi` is infinite.
-//!
-//! Returns `-m` if `m` is infinte.
-//!
-//! ## Accuracy
-//!
-//! Tested at random arguments with `phi` in `[-10, 10]` and `m` in `[0, 1]`.
-//!
-//! Relative Error:
-//!<table>
-//! <tr>
-//!     <th>Arithmetic</th>
-//!     <th>Domain</th>
-//!     <th># Trials</th>
-//!     <th>Peak</th>
-//!     <th>RMS</th>
-//! </tr>
-//! <tr>
-//!     <td>IEEE</td>
-//!     <td>-10, 10</td>
-//!     <td>150000</td>
-//!     <td>3.3e-15</td>
-//!     <td>1.4e-16</td>
-//! </tr>
-//!</table>
+    //! Incomplete elliptic integral of the second kind
+    //!
+    //! ## Description
+    //! Approximates the integral 
+    //!
+    #![doc=include_str!("ellie.svg")]
+    //!
+    //! of amplitude `phi` and modulus `m`, using the arithmetic - geometric mean algorithm.
+    //!
+    //! Returns `NAN` if either input is `NAN` or if `m > 1.0`.
+    //!
+    //! Returns `phi` if `phi` is infinite.
+    //!
+    //! Returns `-m` if `m` is infinte.
+    //!
+    //! ## Accuracy
+    //!
+    //! Tested at random arguments with `phi` in `[-10, 10]` and `m` in `[0, 1]`.
+    //!
+    //! Relative Error:
+    //!<table>
+    //! <tr>
+    //!     <th>Arithmetic</th>
+    //!     <th>Domain</th>
+    //!     <th># Trials</th>
+    //!     <th>Peak</th>
+    //!     <th>RMS</th>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>-10, 10</td>
+    //!     <td>150000</td>
+    //!     <td>3.3e-15</td>
+    //!     <td>1.4e-16</td>
+    //! </tr>
+    //!</table>
  
     if phi.is_nan() || m.is_nan() {
         return f64::NAN;
