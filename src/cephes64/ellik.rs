@@ -55,6 +55,8 @@
 
 /*     Incomplete elliptic integral of first kind      */
 
+#![allow(clippy::excessive_precision)]
+
 use super::consts::{M_PI, M_PI_2, MACHEP};
 use super::ellpk::ellpk;
 
@@ -129,7 +131,7 @@ pub fn ellik(phi: f64,  m: f64) -> f64
         npio2 += 1.0;
     }
     let mut k = if npio2 != 0.0 {
-	    phi = phi - npio2 * M_PI_2;
+	    phi -= npio2 * M_PI_2;
         ellpk(a)
     }
     else {
@@ -281,8 +283,7 @@ fn ellik_neg_m(phi: f64, m: f64) -> f64
     let e2 = x*y - z*z;
     let e3 = x*y*z;
 
-    return scale * (1.0 - e2/10.0 + e3/14.0 + e2*e2/24.0
-                    - 3.0*e2*e3/44.0) / a.sqrt();
+    scale * (1.0 - e2/10.0 + e3/14.0 + e2*e2/24.0 - 3.0*e2*e3/44.0) / a.sqrt()
 }
 
 #[cfg(test)]

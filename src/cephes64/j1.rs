@@ -1,85 +1,81 @@
 /*                                                     j1.c
- *
- *     Bessel function of order one
- *
- *
- *
- * SYNOPSIS:
- *
- * double x, y, j1();
- *
- * y = j1( x );
- *
- *
- *
- * DESCRIPTION:
- *
- * Returns Bessel function of order one of the argument.
- *
- * The domain is divided into the intervals [0, 8] and
- * (8, infinity). In the first interval a 24 term Chebyshev
- * expansion is used. In the second, the asymptotic
- * trigonometric representation is employed using two
- * rational functions of degree 5/5.
- *
- *
- *
- * ACCURACY:
- *
- *                      Absolute error:
- * arithmetic   domain      # trials      peak         rms
- *    IEEE      0, 30       30000       2.6e-16     1.1e-16
- *
- *
- */
+*
+*     Bessel function of order one
+*
+*
+*
+* SYNOPSIS:
+*
+* double x, y, j1();
+*
+* y = j1( x );
+*
+*
+*
+* DESCRIPTION:
+*
+* Returns Bessel function of order one of the argument.
+*
+* The domain is divided into the intervals [0, 8] and
+* (8, infinity). In the first interval a 24 term Chebyshev
+* expansion is used. In the second, the asymptotic
+* trigonometric representation is employed using two
+* rational functions of degree 5/5.
+*
+*
+*
+* ACCURACY:
+*
+*                      Absolute error:
+* arithmetic   domain      # trials      peak         rms
+*    IEEE      0, 30       30000       2.6e-16     1.1e-16
+*
+*
+*/
 /*							y1.c
- *
- *	Bessel function of second kind of order one
- *
- *
- *
- * SYNOPSIS:
- *
- * double x, y, y1();
- *
- * y = y1( x );
- *
- *
- *
- * DESCRIPTION:
- *
- * Returns Bessel function of the second kind of order one
- * of the argument.
- *
- * The domain is divided into the intervals [0, 8] and
- * (8, infinity). In the first interval a 25 term Chebyshev
- * expansion is used, and a call to j1() is required.
- * In the second, the asymptotic trigonometric representation
- * is employed using two rational functions of degree 5/5.
- *
- *
- *
- * ACCURACY:
- *
- *                      Absolute error:
- * arithmetic   domain      # trials      peak         rms
- *    IEEE      0, 30       30000       1.0e-15     1.3e-16
- *
- * (error criterion relative when |y1| > 1).
- *
- */
- 
+*
+*	Bessel function of second kind of order one
+*
+*
+*
+* SYNOPSIS:
+*
+* double x, y, y1();
+*
+* y = y1( x );
+*
+*
+*
+* DESCRIPTION:
+*
+* Returns Bessel function of the second kind of order one
+* of the argument.
+*
+* The domain is divided into the intervals [0, 8] and
+* (8, infinity). In the first interval a 25 term Chebyshev
+* expansion is used, and a call to j1() is required.
+* In the second, the asymptotic trigonometric representation
+* is employed using two rational functions of degree 5/5.
+*
+*
+*
+* ACCURACY:
+*
+*                      Absolute error:
+* arithmetic   domain      # trials      peak         rms
+*    IEEE      0, 30       30000       1.0e-15     1.3e-16
+*
+* (error criterion relative when |y1| > 1).
+*
+*/
+
 
- /*
-  * Cephes Math Library Release 2.8:  June, 2000
-  * Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
-  */
- 
- /*
-  * #define PIO4 .78539816339744830962
-  * #define THPIO4 2.35619449019234492885
-  * #define SQ2OPI .79788456080286535588
-  */
+/*
+* Cephes Math Library Release 2.8:  June, 2000
+* Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
+*/
+
+#![allow(clippy::excessive_precision)]
  
 static RP: [f64; 4] = [
     -8.99971225705559398224E8,

@@ -1,93 +1,95 @@
 /*                                                     j0.c
- *
- *     Bessel function of order zero
- *
- *
- *
- * SYNOPSIS:
- *
- * double x, y, j0();
- *
- * y = j0( x );
- *
- *
- *
- * DESCRIPTION:
- *
- * Returns Bessel function of order zero of the argument.
- *
- * The domain is divided into the intervals [0, 5] and
- * (5, infinity). In the first interval the following rational
- * approximation is used:
- *
- *
- *        2         2
- * (w - r  ) (w - r  ) P (w) / Q (w)
- *       1         2    3       8
- *
- *            2
- * where w = x  and the two r's are zeros of the function.
- *
- * In the second interval, the Hankel asymptotic expansion
- * is employed with two rational functions of degree 6/6
- * and 7/7.
- *
- *
- *
- * ACCURACY:
- *
- *                      Absolute error:
- * arithmetic   domain     # trials      peak         rms
- *    IEEE      0, 30       60000       4.2e-16     1.1e-16
- *
- */
+*
+*     Bessel function of order zero
+*
+*
+*
+* SYNOPSIS:
+*
+* double x, y, j0();
+*
+* y = j0( x );
+*
+*
+*
+* DESCRIPTION:
+*
+* Returns Bessel function of order zero of the argument.
+*
+* The domain is divided into the intervals [0, 5] and
+* (5, infinity). In the first interval the following rational
+* approximation is used:
+*
+*
+*        2         2
+* (w - r  ) (w - r  ) P (w) / Q (w)
+*       1         2    3       8
+*
+*            2
+* where w = x  and the two r's are zeros of the function.
+*
+* In the second interval, the Hankel asymptotic expansion
+* is employed with two rational functions of degree 6/6
+* and 7/7.
+*
+*
+*
+* ACCURACY:
+*
+*                      Absolute error:
+* arithmetic   domain     # trials      peak         rms
+*    IEEE      0, 30       60000       4.2e-16     1.1e-16
+*
+*/
 /*							y0.c
- *
- *	Bessel function of the second kind, order zero
- *
- *
- *
- * SYNOPSIS:
- *
- * double x, y, y0();
- *
- * y = y0( x );
- *
- *
- *
- * DESCRIPTION:
- *
- * Returns Bessel function of the second kind, of order
- * zero, of the argument.
- *
- * The domain is divided into the intervals [0, 5] and
- * (5, infinity). In the first interval a rational approximation
- * R(x) is employed to compute
- *   y0(x)  = R(x)  +   2 * log(x) * j0(x) / M_PI.
- * Thus a call to j0() is required.
- *
- * In the second interval, the Hankel asymptotic expansion
- * is employed with two rational functions of degree 6/6
- * and 7/7.
- *
- *
- *
- * ACCURACY:
- *
- *  Absolute error, when y0(x) < 1; else relative error:
- *
- * arithmetic   domain     # trials      peak         rms
- *    IEEE      0, 30       30000       1.3e-15     1.6e-16
- *
- */
- 
- /*
-  * Cephes Math Library Release 2.8:  June, 2000
-  * Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
-  */
- 
- /* Note: all coefficients satisfy the relative error criterion
-  * except YP, YQ which are designed for absolute error. */
+*
+*	Bessel function of the second kind, order zero
+*
+*
+*
+* SYNOPSIS:
+*
+* double x, y, y0();
+*
+* y = y0( x );
+*
+*
+*
+* DESCRIPTION:
+*
+* Returns Bessel function of the second kind, of order
+* zero, of the argument.
+*
+* The domain is divided into the intervals [0, 5] and
+* (5, infinity). In the first interval a rational approximation
+* R(x) is employed to compute
+*   y0(x)  = R(x)  +   2 * log(x) * j0(x) / M_PI.
+* Thus a call to j0() is required.
+*
+* In the second interval, the Hankel asymptotic expansion
+* is employed with two rational functions of degree 6/6
+* and 7/7.
+*
+*
+*
+* ACCURACY:
+*
+*  Absolute error, when y0(x) < 1; else relative error:
+*
+* arithmetic   domain     # trials      peak         rms
+*    IEEE      0, 30       30000       1.3e-15     1.6e-16
+*
+*/
+
+/*
+* Cephes Math Library Release 2.8:  June, 2000
+* Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
+*/
+
+/* Note: all coefficients satisfy the relative error criterion
+* except YP, YQ which are designed for absolute error. */
+
+#![allow(clippy::excessive_precision)]
 
 static PP: [f64; 7] = [
     7.96936729297347051624E-4,

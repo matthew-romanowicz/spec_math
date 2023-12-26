@@ -73,6 +73,8 @@
 * Copyright 1984, 1987, 2000 by Stephen L. Moshier
 */
 
+#![allow(clippy::excessive_precision)]
+
 use crate::cephes64::chbevl;
 use crate::cephes64::i0;
  
@@ -210,10 +212,10 @@ pub fn k0e(x: f64) -> f64 {
 
     if x == 0.0 {
         //sf_error("k0e", SF_ERROR_SINGULAR, NULL);
-        return f64::INFINITY;
+        f64::INFINITY
     } else if x < 0.0 {
         //sf_error("k0e", SF_ERROR_DOMAIN, NULL);
-        return f64::NAN;
+        f64::NAN
     } else if x <= 2.0 {
         let y = chbevl(x * x - 2.0, &A, 10) - (0.5 * x).ln() * i0(x);
         y * x.exp()

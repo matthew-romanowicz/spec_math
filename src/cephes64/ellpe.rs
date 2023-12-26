@@ -63,6 +63,8 @@
  * (which gets immediately converted to m1 = 1-m)
  */
 
+#![allow(clippy::excessive_precision)]
+
 use super::consts::M_PI_2;
 use super::polevl::polevl;
 
@@ -156,6 +158,24 @@ pub fn ellpe(x: f64) -> f64 {
 #[cfg(test)]
 mod ellpe_tests {
     use super::*;
+
+    // #[test]
+    // fn timing_tests() {
+    //     let mut s = 0.0;
+    //     let now = std::time::Instant::now();
+    //     for i in 0..100000 {
+    //         let x = (i as f64) / 100000.0;
+    //         s += ellpe(x);
+    //     }
+    //     println!("{} {}", now.elapsed().as_micros(), s);
+    //     let mut s = 0.0;
+    //     let now = std::time::Instant::now();
+    //     for i in 0..100000 {
+    //         let x = -(i as f64) / 10.0;
+    //         s += ellpe(x);
+    //     }
+    //     println!("{} {}", now.elapsed().as_micros(), s);
+    // }
 
     #[test]
     fn ellpe_trivials() {

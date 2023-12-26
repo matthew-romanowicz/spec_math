@@ -3,6 +3,8 @@
 * Copyright 1985, 1987, 2000 by Stephen L. Moshier
 */
 
+#![allow(clippy::excessive_precision)]
+
 use crate::cephes64::chbevl;
 
 /* Chebyshev coefficients for exp(-x) I1(x) / x

@@ -7,6 +7,8 @@
 /* Scipy changes:
 * - 07-18-2016: improve evaluation of dn near quarter periods
 */
+
+#![allow(clippy::excessive_precision)]
  
 use super::consts::{M_PI_2, MACHEP};
 

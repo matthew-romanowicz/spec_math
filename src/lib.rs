@@ -1,5 +1,13 @@
 //! This crate contains approximations for a set of mathematical functions 
-//! commonly referred to as "special functions". 
+//! commonly referred to as "special functions". The goal of this crate is
+//! to eventually contain a full Rust re-implementation of the CEPHES 
+//! library with minimal changes in modules such as the [`cephes64`](crate::cephes64)
+//! module. The special functions will also be available as traits for easier
+//! use in Rust, potentially with modifications to correct bugs or improve performance
+//! from the original CEPHES implementation.
+//!
+//! Currently, the gamma functions, elliptic integrals, and bessel functions are 
+//! implemented.
 
 pub mod cephes64;
 
@@ -8,6 +16,33 @@ pub struct EllipJOutput<T> {
     pub cn: T,
     pub dn: T,
     pub phi: T
+}
+
+pub struct AiryOutput<T> {
+    pub ai: T,
+    pub aip: T,
+    pub bi: T,
+    pub bip: T
+}
+
+/// Implementations of gamma functions as a trait
+pub trait Gamma {
+    /// Gamma function
+    fn gamma(&self) -> Self;
+
+    /// Natural logarithm of the absolute value of the gamma function
+    fn lgamma(&self) -> Self;
+}
+
+impl Gamma for f64 {
+    fn gamma(&self) -> f64 {
+        //! Uses [`cephes64::gamma`](crate::cephes64::gamma)
+        crate::cephes64::gamma(*self)
+    }
+    fn lgamma(&self) -> f64 {
+        //! Uses [`cephes64::lgam`](crate::cephes64::lgam) 
+        crate::cephes64::lgam(*self)
+    }
 }
 
 /// Implementations of elliptic integrals as a trait
@@ -53,7 +88,10 @@ impl Ellip for f64 {
 }
 
 /// Implementations of Bessel functions as a trait
-pub trait Bessel {
+pub trait Bessel: Sized {
+    /// Airy functions
+    fn airy(&self) -> AiryOutput<Self>;
+
     /// Bessel function of the first kind, order zero
     fn bessel_j0(&self) -> Self;
 
@@ -83,9 +121,32 @@ pub trait Bessel {
 
     /// Modified Bessel function of the third kind, order zero exponentially scaled
     fn bessel_k0e(&self) -> Self;
+
+    /// Modified Bessel function of the third kind, order one
+    fn bessel_k1(&self) -> Self;
+
+    /// Modified Bessel function of the third kind, order one exponentially scaled
+    fn bessel_k1e(&self) -> Self;
+
+    /// Bessel function of second kind of integer order
+    fn bessel_yn(&self, n: isize) -> Self;
+
+    /// Modified Bessel function, third kind, integer order
+    fn bessel_kn(&self, n: isize) -> Self;
+
+    /// Bessel function of first kind of real order
+    fn bessel_jv(&self, v: f64) -> Self;
+
+    /// Bessel function of second kind of real order
+    fn bessel_yv(&self, v: f64) -> Self;
 }
 
 impl Bessel for f64 {
+    fn airy(&self) -> AiryOutput<f64> {
+        //! Uses [`cephes64::airy`](crate::cephes64::airy)
+        let res = crate::cephes64::airy(*self);
+        AiryOutput::<f64> {ai: res.0, aip: res.1, bi: res.2, bip: res.3}
+    }
     fn bessel_j0(&self) -> f64 {
         //! Uses [`cephes64::j0`](crate::cephes64::j0)
         crate::cephes64::j0(*self)
@@ -125,5 +186,29 @@ impl Bessel for f64 {
     fn bessel_k0e(&self) -> f64 {
         //! Uses [`cephes64::k0e`](crate::cephes64::k0e)
         crate::cephes64::k0e(*self)
+    }
+    fn bessel_k1(&self) -> f64 {
+        //! Uses [`cephes64::k1`](crate::cephes64::k1)
+        crate::cephes64::k1(*self)
+    }
+    fn bessel_k1e(&self) -> f64 {
+        //! Uses [`cephes64::k1e`](crate::cephes64::k1e)
+        crate::cephes64::k1e(*self)
+    }
+    fn bessel_yn(&self, n: isize) -> f64 {
+        //! Uses [`cephes64::yn`](crate::cephes64::yn)
+        crate::cephes64::yn(n, *self)
+    }
+    fn bessel_kn(&self, n: isize) -> f64 {
+        //! Uses [`cephes64::kn`](crate::cephes64::kn)
+        crate::cephes64::kn(n, *self)
+    }
+    fn bessel_jv(&self, v: f64) -> f64 {
+        //! Uses [`cephes64::jv`](crate::cephes64::jv)
+        crate::cephes64::jv(v, *self)
+    }
+    fn bessel_yv(&self, v: f64) -> f64 {
+        //! Uses [`cephes64::yv`](crate::cephes64::yv)
+        crate::cephes64::yv(v, *self)
     }
 }

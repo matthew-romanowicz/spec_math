@@ -1,57 +1,12 @@
-// Copied from https://github.com/scipy/scipy/blob/main/scipy/special/cephes/ellie.c
-
-/*                                                     ellie.c
- *
- *     Incomplete elliptic integral of the second kind
- *
- *
- *
- * SYNOPSIS:
- *
- * double phi, m, y, ellie();
- *
- * y = ellie( phi, m );
- *
- *
- *
- * DESCRIPTION:
- *
- * Approximates the integral
- *
- *
- *                 phi
- *                  -
- *                 | |
- *                 |                   2
- * E(phi_\m)  =    |    sqrt( 1 - m sin t ) dt
- *                 |
- *               | |    
- *                -
- *                 0
- *
- * of amplitude phi and modulus m, using the arithmetic -
- * geometric mean algorithm.
- *
- *
- *
- * ACCURACY:
- *
- * Tested at random arguments with phi in [-10, 10] and m in
- * [0, 1].
- *                      Relative error:
- * arithmetic   domain     # trials      peak         rms
- *    IEEE     -10,10      150000       3.3e-15     1.4e-16
- */
- 
-
- /*
-  * Cephes Math Library Release 2.0:  April, 1987
-  * Copyright 1984, 1987, 1993 by Stephen L. Moshier
-  * Direct inquiries to 30 Frost Street, Cambridge, MA 02140
-  */
- /* Copyright 2014, Eric W. Moore */
+/*
+* Cephes Math Library Release 2.0:  April, 1987
+* Copyright 1984, 1987, 1993 by Stephen L. Moshier
+* Direct inquiries to 30 Frost Street, Cambridge, MA 02140
+*/
+/* Copyright 2014, Eric W. Moore */
  
- /*     Incomplete elliptic integral of second kind     */
+
+#![allow(clippy::excessive_precision)]
 
 use super::consts::{M_PI, M_PI_2, M_PI_4, MACHEP};
 use super::unity::cosm1;
