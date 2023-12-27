@@ -6,6 +6,8 @@ license = "MIT OR Apache-2.0"
 documentation = "https://docs.rs/spec_math"
 description = "Rust implementations of special mathematical functions. Includes re-implementation of the CEPHES math library for gamma functions, elliptic integrals, and bessel functions"
 keywords = ["CEPHES", "special", "elliptic", "gamma", "bessel"]
+readme = "README.md"
+repository = "https://github.com/matthew-romanowicz/spec_math"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

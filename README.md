@@ -1,4 +1,4 @@
-# spepc_math
+# spec_math
 
 This crate contains approximations for a set of mathematical functions 
 commonly referred to as "special functions". The goal of this crate is
