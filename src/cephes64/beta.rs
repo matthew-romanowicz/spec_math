@@ -59,6 +59,8 @@ const ASYMP_FACTOR: f64 = 1e6;
 // static double lbeta_negint(int a, double b);
 // static double beta_negint(int a, double b);
 
+// $$\mathrm{B}(a, b) = \frac{\Gamma(a)\,\Gamma(b)}{\Gamma(a + b)}$$
+
 pub fn beta(a: f64, b: f64) -> f64 {
     //! Beta function
     //!

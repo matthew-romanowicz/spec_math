@@ -91,6 +91,49 @@ pub fn p1evl(x: f64, coef: &[f64], n: usize) -> f64
     ans
 }
 
+/* Evaluate a rational function. See [1]. */
+
+pub fn ratevl(x: f64, num: &[f64], m: isize, denom: &[f64], n: isize) -> f64
+{
+    let absx = x.abs();
+
+    let (dir, mut p, y) = if (absx > 1.0) {
+        /* Evaluate as a polynomial in 1/x. */
+        (-1_isize, m, 1.0 / x)
+    } else {
+        (1_isize, 0_isize, x)
+    };
+
+    /* Evaluate the numerator */
+    let mut num_ans = num[p as usize];
+    p += dir;
+    for i in 1..=m {
+        num_ans = num_ans * y + num[p as usize];
+        p += dir;
+    }
+
+    /* Evaluate the denominator */
+    if (absx > 1.0) {
+        p = n;
+    } else {
+        p = 0;
+    }
+
+    let mut denom_ans = denom[p as usize];
+    p += dir;
+    for i in 1..=n {
+        denom_ans = denom_ans * y + denom[p as usize];
+        p += dir;
+    }
+
+    if (absx > 1.0) {
+        let i = n - m;
+        return x.powi(i as i32) * num_ans / denom_ans;
+    } else {
+        return num_ans / denom_ans;
+    }
+}
+
 #[cfg(test)]
 mod polevl_tests {
     use super::*;
