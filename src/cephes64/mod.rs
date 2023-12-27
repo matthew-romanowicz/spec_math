@@ -12,6 +12,8 @@ use crate::cephes64::polevl::polevl;
 mod gamma;
 use crate::cephes64::gamma::{lgam_sgn};
 pub use crate::cephes64::gamma::{gamma, lgam};
+mod beta;
+pub use crate::cephes64::beta::{beta, lbeta};
 mod chbevl;
 use crate::cephes64::chbevl::chbevl;
 mod unity;
