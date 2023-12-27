@@ -25,13 +25,19 @@ pub struct AiryOutput<T> {
     pub bip: T
 }
 
-/// Implementations of gamma functions as a trait
+/// Implementations of gamma and beta functions as a trait
 pub trait Gamma {
     /// Gamma function
     fn gamma(&self) -> Self;
 
     /// Natural logarithm of the absolute value of the gamma function
     fn lgamma(&self) -> Self;
+
+    /// Beta function
+    fn beta(&self, other: Self) -> Self;
+
+    /// Natural logarithm of the absolute value of the beta function
+    fn lbeta(&self, other: Self) -> Self;
 }
 
 impl Gamma for f64 {
@@ -42,6 +48,14 @@ impl Gamma for f64 {
     fn lgamma(&self) -> f64 {
         //! Uses [`cephes64::lgam`](crate::cephes64::lgam) 
         crate::cephes64::lgam(*self)
+    }
+    fn beta(&self, other: f64) -> f64 {
+        //! Uses [`cephes64::beta`](crate::cephes64::beta)
+        crate::cephes64::beta(*self, other)
+    }
+    fn lbeta(&self, other: f64) -> f64 {
+        //! Uses [`cephes64::lbeta`](crate::cephes64::lbeta) 
+        crate::cephes64::lbeta(*self, other)
     }
 }
 

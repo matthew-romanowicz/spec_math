@@ -170,10 +170,10 @@ pub fn beta(a: f64, b: f64) -> f64 {
 
 /* Natural log of |beta|. */
 
-pub fn lbeta(a: f64, b: f64) -> f64
-{
-    // double y;
-    // int sign;
+pub fn lbeta(a: f64, b: f64) -> f64 {
+    //! Natural logarithm of the absolute value of the Beta function.
+    //!
+    //! See [`beta`](crate::cephes64::beta)
 
     let mut sign: isize = 1;
 
