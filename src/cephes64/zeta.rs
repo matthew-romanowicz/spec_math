@@ -89,14 +89,14 @@ pub fn zeta(x: f64, q: f64) -> f64 {
 
     if x == 1.0 {
         return f64::INFINITY;
-    } else if (x < 1.0) {
+    } else if x < 1.0 {
         //sf_error("zeta", SF_ERROR_DOMAIN, NULL);
         return f64::NAN;
-    } else if (q <= 0.0) {
+    } else if q <= 0.0 {
         if q == q.floor() {
             //sf_error("zeta", SF_ERROR_SINGULAR, NULL);
             return f64::INFINITY;
-        } else if (x != x.floor()) {
+        } else if x != x.floor() {
             return f64::NAN; /* because q^-x not defined */
         }
     }
@@ -104,7 +104,7 @@ pub fn zeta(x: f64, q: f64) -> f64 {
     /* Asymptotic expansion
     * https://dlmf.nist.gov/25.11#E43
     */
-    if (q > 1e8) {
+    if q > 1e8 {
         return (1.0 / (x - 1.0) + 1.0 / (2.0 * q)) * q.powf(1.0 - x);
     }
 

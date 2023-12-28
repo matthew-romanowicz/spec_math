@@ -134,10 +134,10 @@ pub fn ndtr(a: f64) -> f64
     let x = a * M_SQRT1_2;
     let z = x.abs();
 
-    if (z < M_SQRT1_2) {
+    if z < M_SQRT1_2 {
         0.5 + 0.5 * erf(x)
     } else {
-        if (x > 0.0) {
+        if x > 0.0 {
             1.0 - 0.5 * erfc(z)
         } else {
             0.5 * erfc(z)

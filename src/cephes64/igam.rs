@@ -1,41 +1,4 @@
-/*                                                     igam.c
-*
-*     Incomplete Gamma integral
-*
-*
-*
-* SYNOPSIS:
-*
-* double a, x, y, igam();
-*
-* y = igam( a, x );
-*
-* DESCRIPTION:
-*
-* The function is defined by
-*
-*                           x
-*                            -
-*                   1       | |  -t  a-1
-*  igam(a,x)  =   -----     |   e   t   dt.
-*                  -      | |
-*                 | (a)    -
-*                           0
-*
-*
-* In this implementation both arguments must be positive.
-* The integral is evaluated by either a power series or
-* continued fraction expansion, depending on the relative
-* values of a and x.
-*
-* ACCURACY:
-*
-*                      Relative error:
-* arithmetic   domain     # trials      peak         rms
-*    IEEE      0,30       200000       3.6e-14     2.9e-15
-*    IEEE      0,100      300000       9.9e-14     1.5e-14
-*/
-/*							igamc()
+/*							igamc()
 *
 *	Complemented incomplete Gamma integral
 *
@@ -123,7 +86,7 @@ const BIGINV: f64 = 2.22044604925031308085e-16;
 const K: usize = 25;
 const N: usize = 25;
 
-const d: [[f64; N]; K] =
+const D: [[f64; N]; K] =
 [[-3.3333333333333333e-1, 8.3333333333333333e-2, -1.4814814814814815e-2, 1.1574074074074074e-3, 3.527336860670194e-4, -1.7875514403292181e-4, 3.9192631785224378e-5, -2.1854485106799922e-6, -1.85406221071516e-6, 8.296711340953086e-7, -1.7665952736826079e-7, 6.7078535434014986e-9, 1.0261809784240308e-8, -4.3820360184533532e-9, 9.1476995822367902e-10, -2.551419399494625e-11, -5.8307721325504251e-11, 2.4361948020667416e-11, -5.0276692801141756e-12, 1.1004392031956135e-13, 3.3717632624009854e-13, -1.3923887224181621e-13, 2.8534893807047443e-14, -5.1391118342425726e-16, -1.9752288294349443e-15],
 [-1.8518518518518519e-3, -3.4722222222222222e-3, 2.6455026455026455e-3, -9.9022633744855967e-4, 2.0576131687242798e-4, -4.0187757201646091e-7, -1.8098550334489978e-5, 7.6491609160811101e-6, -1.6120900894563446e-6, 4.6471278028074343e-9, 1.378633446915721e-7, -5.752545603517705e-8, 1.1951628599778147e-8, -1.7543241719747648e-11, -1.0091543710600413e-9, 4.1627929918425826e-10, -8.5639070264929806e-11, 6.0672151016047586e-14, 7.1624989648114854e-12, -2.9331866437714371e-12, 5.9966963656836887e-13, -2.1671786527323314e-16, -4.9783399723692616e-14, 2.0291628823713425e-14, -4.13125571381061e-15],
 [4.1335978835978836e-3, -2.6813271604938272e-3, 7.7160493827160494e-4, 2.0093878600823045e-6, -1.0736653226365161e-4, 5.2923448829120125e-5, -1.2760635188618728e-5, 3.4235787340961381e-8, 1.3721957309062933e-6, -6.298992138380055e-7, 1.4280614206064242e-7, -2.0477098421990866e-10, -1.4092529910867521e-8, 6.228974084922022e-9, -1.3670488396617113e-9, 9.4283561590146782e-13, 1.2872252400089318e-10, -5.5645956134363321e-11, 1.1975935546366981e-11, -4.1689782251838635e-15, -1.0940640427884594e-12, 4.6622399463901357e-13, -9.905105763906906e-14, 1.8931876768373515e-17, 8.8592218725911273e-15],
@@ -151,101 +114,188 @@ const d: [[f64; N]; K] =
 [-9.8959643098322368e+2, 2.1925555360905233e+3, -1.9283586782723356e+3, -1.5925738122215253e-1, 1.9569985945919857e+3, -2.4072514765081556e+3, 1.3756149959336496e+3, 1.2920735237496668e-3, -7.525941715948055e+2, 7.3171668742208716e+2, -3.4137023466220065e+2, -9.9857390260608043e-6, 1.3356313181291573e+2, -1.1276295161252794e+2, 4.6310396098204458e+1, -7.9237387133614756e-6, -1.4510726927018646e+1, 1.1111771248100563e+1, -4.1690817945270892, 3.1008219800117808e-3, 1.1220095449981468, -7.6052379926149916e-1, 3.6262236505085254e-1, 2.216867741940747e-1, 4.8683443692930507e-1]];
 
 
+//$$\mathrm{igam}(a, x) = \frac{1}{\Gamma(a)}\int_{0}^{x}{e^{-t}\,t^{a-1}\,dt}$$
 
-pub fn igam(a: f64, x: f64) -> f64
-{
-    //double absxma_a;
+pub fn igam(a: f64, x: f64) -> f64 {
+    //! Incomplete Gamma integral
+    //!
+    //! ## DESCRIPTION:
+    //!
+    //! The function is defined by
+    //!
+    #![doc=include_str!("igam.svg")]
+    //!
+    //! In this implementation both arguments must be positive.
+    //! The integral is evaluated by either a power series or
+    //! continued fraction expansion, depending on the relative
+    //! values of a and x.
+    //!
+    //! ## ACCURACY:
+    //!
+    //! Relative error:
+    //!
+    //!<table>
+    //! <tr>
+    //!     <th>Arithmetic</th>
+    //!     <th>Domain</th>
+    //!     <th># Trials</th>
+    //!     <th>Peak</th>
+    //!     <th>RMS</th>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>0, 30.6417</td>
+    //!     <td>200000</td>
+    //!     <td>3.6e-14</td>
+    //!     <td>2.9e-15</td>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>0, 100</td>
+    //!     <td>300000</td>
+    //!     <td>9.9e-14</td>
+    //!     <td>1.5e-14</td>
+    //! </tr>
+    //!</table>
 
-    if (x < 0.0 || a < 0.0) {
+    if x < 0.0 || a < 0.0 {
         //sf_error("gammainc", SF_ERROR_DOMAIN, NULL);
-        return f64::NAN;
-    } else if (a == 0.0) {
+        f64::NAN
+    } else if a == 0.0 {
         // TODO: Is this right?
-        if (x > 0.0) {
-            return 1.0;
+        if x > 0.0 {
+            1.0
         } else {
-            return f64::NAN;
+            f64::NAN
         }
-    } else if (x == 0.0) {
+    } else if x == 0.0 {
         /* Zero integration limit */
-        return 0.0;
-    } else if (a.is_infinite()) {
-        if (x.is_infinite()) {
-            return f64::NAN;
-        }
-        return 0.0;
-    } else if (x.is_infinite()) {
-        return 1.0;
-    }
-
-    /* Asymptotic regime where a ~ x; see [2]. */
-    let absxma_a = (x - a).abs() / a;
-    if ((a > SMALL) && (a < LARGE) && (absxma_a < SMALLRATIO)) {
-        return asymptotic_series(a, x, IGAM);
-    } else if ((a > LARGE) && (absxma_a < LARGERATIO / a.sqrt())) {
-        return asymptotic_series(a, x, IGAM);
-    }
-
-    if ((x > 1.0) && (x > a)) {
-        return (1.0 - igamc(a, x));
-    }
-
-    return igam_series(a, x);
-}
-
-
-pub fn igamc(a: f64, x: f64) -> f64
-{
-    //double absxma_a;
-
-    if (x < 0.0 || a < 0.0) {
-        //sf_error("gammaincc", SF_ERROR_DOMAIN, NULL);
-        return f64::NAN;
-    } else if (a == 0.0) {
-        if (x > 0.0) {
-            return 0.0;
-        } else {
-            return f64::NAN;
-    }
-    } else if (x == 0.0) {
-        return 1.0;
+        0.0
     } else if a.is_infinite() {
         if x.is_infinite() {
-            return f64::NAN;
+            f64::NAN
+        } else {
+            0.0
         }
-        return 1.0;
     } else if x.is_infinite() {
-        return 0.0;
-    }
-
-    /* Asymptotic regime where a ~ x; see [2]. */
-    let absxma_a = (x - a).abs() / a;
-    if ((a > SMALL) && (a < LARGE) && (absxma_a < SMALLRATIO)) {
-        return asymptotic_series(a, x, IGAMC);
-    } else if ((a > LARGE) && (absxma_a < LARGERATIO / a.sqrt())) {
-        return asymptotic_series(a, x, IGAMC);
-    }
-
-    /* Everywhere else; see [2]. */
-    if (x > 1.1) {
-        if (x < a) {
-            return 1.0 - igam_series(a, x);
-        } else {
-            return igamc_continued_fraction(a, x);
-        }
-    } else if (x <= 0.5) {
-        if (-0.4 / x.ln() < a) {
-            return 1.0 - igam_series(a, x);
-        } else {
-            return igamc_series(a, x);
-        }
+        1.0
     } else {
-        if (x * 1.1 < a) {
-            return 1.0 - igam_series(a, x);
+        /* Asymptotic regime where a ~ x; see [2]. */
+        let absxma_a = (x - a).abs() / a;
+        if (a > SMALL) && (a < LARGE) && (absxma_a < SMALLRATIO) {
+            asymptotic_series(a, x, IGAM)
+        } else if (a > LARGE) && (absxma_a < LARGERATIO / a.sqrt()) {
+            asymptotic_series(a, x, IGAM)
+        } else if (x > 1.0) && (x > a) {
+            1.0 - igamc(a, x)
         } else {
-            return igamc_series(a, x);
+            igam_series(a, x)
         }
     }
+
+    
+}
+
+//$$\mathrm{igamc}(a, x) = 1 - \mathrm{igam}(a, x) = \frac{1}{\Gamma(a)}\int_{x}^{\infty}{e^{-t}\,t^{a-1}\,dt}$$
+
+
+pub fn igamc(a: f64, x: f64) -> f64 {
+    //! Complemented incomplete Gamma integral
+    //!
+    //! ## DESCRIPTION:
+    //!
+    //! The function is defined by
+    //!
+    #![doc=include_str!("igamc.svg")]
+    //!
+    //! In this implementation both arguments must be positive.
+    //! The integral is evaluated by either a power series or
+    //! continued fraction expansion, depending on the relative
+    //! values of `a` and `x`.
+    //!
+    //! ## ACCURACY:
+    //!
+    //! Tested at random `a`, `x`.
+    //!
+    //! Relative error:
+    //!
+    //!<table>
+    //! <tr>
+    //!     <th>Arithmetic</th>
+    //!     <th>a Domain</th>
+    //!     <th>x Domain</th>
+    //!     <th># Trials</th>
+    //!     <th>Peak</th>
+    //!     <th>RMS</th>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>0.5, 100</td>
+    //!     <td>0, 100</td>
+    //!     <td>200000</td>
+    //!     <td>1.9e-14</td>
+    //!     <td>1.7e-15</td>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>0.01, 0.5</td>
+    //!     <td>0, 100</td>
+    //!     <td>200000</td>
+    //!     <td>1.4e-13</td>
+    //!     <td>1.6e-15</td>
+    //! </tr>
+    //!</table>
+
+    if x < 0.0 || a < 0.0 {
+        //sf_error("gammaincc", SF_ERROR_DOMAIN, NULL);
+        f64::NAN
+    } else if a == 0.0 {
+        if x > 0.0 {
+            0.0
+        } else {
+            f64::NAN
+        }
+    } else if x == 0.0 {
+        1.0
+    } else if a.is_infinite() {
+        if x.is_infinite() {
+            f64::NAN
+        } else {
+            1.0
+        }
+    } else if x.is_infinite() {
+        0.0
+    } else {
+        /* Asymptotic regime where a ~ x; see [2]. */
+        let absxma_a = (x - a).abs() / a;
+        if (a > SMALL) && (a < LARGE) && (absxma_a < SMALLRATIO) {
+            asymptotic_series(a, x, IGAMC)
+        } else if (a > LARGE) && (absxma_a < LARGERATIO / a.sqrt()) {
+            asymptotic_series(a, x, IGAMC)
+
+        /* Everywhere else; see [2]. */
+        } else if x > 1.1 { 
+            if x < a {
+                1.0 - igam_series(a, x)
+            } else {
+                igamc_continued_fraction(a, x)
+            }
+        } else if x <= 0.5 {
+            if -0.4 / x.ln() < a {
+                1.0 - igam_series(a, x)
+            } else {
+                igamc_series(a, x)
+            }
+        } else {
+            if x * 1.1 < a {
+                1.0 - igam_series(a, x)
+            } else {
+                igamc_series(a, x)
+            }
+        }
+    }
+
+
 }
 
 
@@ -256,42 +306,35 @@ pub fn igamc(a: f64, x: f64) -> f64
 * corrected from (15) and (16) in [2] by replacing exp(x - a) with
 * exp(a - x).
 */
-fn igam_fac(a: f64, x: f64) -> f64
-{
-    //double ax, fac, res, num;
+fn igam_fac(a: f64, x: f64) -> f64 {
 
-    if ((a - x).abs() > 0.4 * a.abs()) {
+    if (a - x).abs() > 0.4 * a.abs() {
         let ax = a * x.ln() - x - lgam(a);
-        if (ax < -MAXLOG) {
+        if ax < -MAXLOG {
            // sf_error("igam", SF_ERROR_UNDERFLOW, NULL);
-            return 0.0;
+            0.0
+        } else {
+            ax.exp()
         }
-        return ax.exp();
-    }
-
-    let fac = a + LANCZOS_G - 0.5;
-    let mut res = (fac / 1.0_f64.exp()).sqrt() / lanczos_sum_expg_scaled(a);
-
-    if ((a < 200.0) && (x < 200.0)) {
-        res *= (a - x).exp() * (x / fac).powf(a);
     } else {
-        let num = x - a - LANCZOS_G + 0.5;
-        res *= (a * log1pmx(num / fac) + x * (0.5 - LANCZOS_G) / fac).exp();
+        let fac = a + LANCZOS_G - 0.5;
+        let mut res = (fac / 1.0_f64.exp()).sqrt() / lanczos_sum_expg_scaled(a);
+    
+        if (a < 200.0) && (x < 200.0) {
+            res * ((a - x).exp() * (x / fac).powf(a))
+        } else {
+            let num = x - a - LANCZOS_G + 0.5;
+            res * ((a * log1pmx(num / fac) + x * (0.5 - LANCZOS_G) / fac).exp())
+        }
     }
-
-    return res;
 }
 
 
 /* Compute igamc using DLMF 8.9.2. */
 fn igamc_continued_fraction(a: f64, x: f64) -> f64
 {
-    //int i;
-    //double ans, ax, c, yc, r, t, y, z;
-    //double pk, pkm1, pkm2, qk, qkm1, qkm2;
-
     let ax = igam_fac(a, x);
-    if (ax == 0.0) {
+    if ax == 0.0 {
         return 0.0;
     }
 
@@ -314,7 +357,7 @@ fn igamc_continued_fraction(a: f64, x: f64) -> f64
         let yc = y * c;
         let pk = pkm1 * z - pkm2 * yc;
         let qk = qkm1 * z - qkm2 * yc;
-        if (qk != 0.0) {
+        if qk != 0.0 {
             let r = pk / qk;
             t = ((ans - r) / r).abs();
             ans = r;
@@ -326,29 +369,26 @@ fn igamc_continued_fraction(a: f64, x: f64) -> f64
         pkm1 = pk;
         qkm2 = qkm1;
         qkm1 = qk;
-        if (pk.abs() > BIG) {
+        if pk.abs() > BIG {
             pkm2 *= BIGINV;
             pkm1 *= BIGINV;
             qkm2 *= BIGINV;
             qkm1 *= BIGINV;
         }
-        if (t <= MACHEP) {
+        if t <= MACHEP {
             break;
         }
     }
 
-    return (ans * ax);
+    ans * ax
 }
 
 
 /* Compute igam using DLMF 8.11.4. */
-fn igam_series(a: f64, x: f64) -> f64
-{
-    //int i;
-    //double ans, ax, c, r;
+fn igam_series(a: f64, x: f64) -> f64 {
 
     let ax = igam_fac(a, x);
-    if (ax == 0.0) {
+    if ax == 0.0 {
         return 0.0;
     }
 
@@ -361,62 +401,59 @@ fn igam_series(a: f64, x: f64) -> f64
         r += 1.0;
         c *= x / r;
         ans += c;
-        if (c <= MACHEP * ans) {
+        if c <= MACHEP * ans {
             break;
         }
     }
 
-    return (ans * ax / a);
+    ans * ax / a
 }
 
 
 /* Compute igamc using DLMF 8.7.3. This is related to the series in
 * igam_series but extra care is taken to avoid cancellation.
 */
-fn igamc_series(a: f64, x: f64) -> f64
-{
-    //int n;
+fn igamc_series(a: f64, x: f64) -> f64 {
+
     let mut fac: f64 = 1.0;
     let mut sum: f64 = 0.0;
-    //double term, logx;
 
     for n in 1..MAXITER {
         fac *= -x / n as f64;
         let term = fac / (a + n as f64);
         sum += term;
-        if (term.abs() <= MACHEP * sum.abs()) {
+        if term.abs() <= MACHEP * sum.abs() {
             break;
         }
     }
 
     let logx = x.ln();
     let term = -expm1(a * logx - lgam1p(a));
-    return term - (a * logx - lgam(a)).exp() * sum;
+
+    term - (a * logx - lgam(a)).exp() * sum
 }
 
 
 /* Compute igam/igamc using DLMF 8.12.3/8.12.4. */
-fn asymptotic_series(a: f64, x: f64, func: isize) -> f64
-{
-    //int k, n, sgn;
+fn asymptotic_series(a: f64, x: f64, func: isize) -> f64 {
+
     let mut maxpow: usize = 0;
     let lambda = x / a;
     let  sigma = (x - a) / a;
-    //double eta, res, ck, ckterm, term, absterm;
     let mut absoldterm = f64::INFINITY;
     let mut etapow: [f64; N] = [1.0; N];
     let mut sum: f64 = 0.0;
     let mut afac: f64 = 1.0;
 
-    let sgn = if (func == IGAM) {
+    let sgn = if func == IGAM {
         -1
     } else {
         1
     };
 
-    let eta = if (lambda > 1.0) {
+    let eta = if lambda > 1.0 {
         (-2.0 * log1pmx(sigma)).sqrt()
-    } else if (lambda < 1.0) {
+    } else if lambda < 1.0 {
         -(-2.0 * log1pmx(sigma)).sqrt()
     } else {
         0.0
@@ -425,25 +462,25 @@ fn asymptotic_series(a: f64, x: f64, func: isize) -> f64
     let res = 0.5 * erfc(sgn as f64 * eta * (a / 2.0).sqrt());
 
     for k in 0..K {
-        let mut ck = d[k][0];
+        let mut ck = D[k][0];
         for n in 1..N {
-            if (n > maxpow) {
+            if n > maxpow {
                 etapow[n] = eta * etapow[n-1];
                 maxpow += 1;
             }
-            let ckterm = d[k][n]*etapow[n];
+            let ckterm = D[k][n]*etapow[n];
             ck += ckterm;
-            if (ckterm.abs() < MACHEP * ck.abs()) {
+            if ckterm.abs() < MACHEP * ck.abs() {
                 break;
             }
         }
         let term = ck * afac;
         let absterm = term.abs();
-        if (absterm > absoldterm) {
+        if absterm > absoldterm {
             break;
         }
         sum += term;
-        if (absterm < MACHEP * sum.abs()) {
+        if absterm < MACHEP * sum.abs() {
             break;
         }
         absoldterm = absterm;

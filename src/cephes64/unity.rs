@@ -49,24 +49,23 @@ const LQ: [f64; 6] = [
     6.0118660497603843919306E1,
 ];
 
-pub fn log1p(x: f64) -> f64
-{
-    //double z;
+pub fn log1p(x: f64) -> f64 {
 
     let mut z = 1.0 + x;
-    if ((z < M_SQRT1_2) || (z > M_SQRT2)) {
-        return (z.ln());
+    if (z < M_SQRT1_2) || (z > M_SQRT2) {
+        z.ln()
+    } else {
+        z = x * x;
+        z = -0.5 * z + x * (z * polevl(x, &LP, 6) / p1evl(x, &LQ, 6));
+        x + z
     }
-    z = x * x;
-    z = -0.5 * z + x * (z * polevl(x, &LP, 6) / p1evl(x, &LQ, 6));
-    return (x + z);
 }
 
 
 /* log(1 + x) - x */
-pub fn log1pmx(x: f64) -> f64
-{
-    if (x.abs() < 0.5) {
+pub fn log1pmx(x: f64) -> f64 {
+
+    if x.abs() < 0.5 {
         let mut xfac = x;
         let mut res: f64 = 0.0;
 
@@ -74,14 +73,15 @@ pub fn log1pmx(x: f64) -> f64
             xfac *= -x;
             let term = xfac / n as f64;
             res += term;
-            if (term.abs() < MACHEP * res.abs()) {
+            if term.abs() < MACHEP * res.abs() {
                 break;
             }
         }
-        return res;
+
+        res
     }
     else {
-        return log1p(x) - x;
+        log1p(x) - x
     }
 }
 
@@ -105,29 +105,25 @@ const EQ: [f64; 4] = [
     2.0000000000000000000897E0,
 ];
 
-pub fn expm1(x: f64) -> f64
-{
-    //double r, xx;
+pub fn expm1(x: f64) -> f64 {
 
-    if (x.is_infinite()) {
-        if (x.is_nan()) {
-            return x;
+    if x.is_infinite() {
+        if x.is_nan() {
+            x
+        } else if x > 0.0 {
+            x
+        } else {
+            -1.0
         }
-        else if (x > 0.0) {
-            return x;
-        }
-        else {
-            return -1.0;
-        }
-
+    } else if (x < -0.5) || (x > 0.5) {
+        x.exp() - 1.0
+    } else {
+        let xx = x * x;
+        let r = x * polevl(xx, &EP, 2);
+        let r = r / (polevl(xx, &EQ, 3) - r);
+        r + r
     }
-    if ((x < -0.5) || (x > 0.5)) {
-        return (x.exp() - 1.0);
-    }
-    let xx = x * x;
-    let r = x * polevl(xx, &EP, 2);
-    let r = r / (polevl(xx, &EQ, 3) - r);
-    return (r + r);
+    
 }
 
 static COSCOF: [f64; 7] = [
@@ -151,9 +147,9 @@ pub fn cosm1(x: f64) -> f64 {
 }
 
 /* Compute lgam(x + 1) around x = 0 using its Taylor series. */
-fn lgam1p_taylor(x: f64) -> f64
-{
-    if (x == 0.0) {
+fn lgam1p_taylor(x: f64) -> f64 {
+
+    if x == 0.0 {
         return 0.0;
     }
     let mut res = -EULER * x;
@@ -163,23 +159,23 @@ fn lgam1p_taylor(x: f64) -> f64
         xfac *= -x;
         coeff = zeta(n as f64, 1.0) * xfac / n as f64;
         res += coeff;
-        if (coeff.abs() < MACHEP * res.abs()) {
+        if coeff.abs() < MACHEP * res.abs() {
                 break;
         }
     }
     
-    return res;
+    res
 }
 
 
 /* Compute lgam(x + 1). */
-pub fn lgam1p(x: f64) -> f64
-{
-    if (x.abs() <= 0.5) {
-	    return lgam1p_taylor(x);
-    } else if ((x - 1.0).abs() < 0.5) {
-	    return x.ln() + lgam1p_taylor(x - 1.0);
+pub fn lgam1p(x: f64) -> f64 {
+
+    if x.abs() <= 0.5 {
+	    lgam1p_taylor(x)
+    } else if (x - 1.0).abs() < 0.5 {
+	    x.ln() + lgam1p_taylor(x - 1.0)
     } else {
-	    return lgam(x + 1.0);
+	    lgam(x + 1.0)
     }
 }

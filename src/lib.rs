@@ -6,7 +6,7 @@
 //! use in Rust, potentially with modifications to correct bugs or improve performance
 //! from the original CEPHES implementation.
 //!
-//! Currently, the gamma functions, elliptic integrals, and bessel functions are 
+//! Currently, the error functions, gamma functions, elliptic integrals, and bessel functions are 
 //! implemented.
 
 pub mod cephes64;
@@ -25,6 +25,26 @@ pub struct AiryOutput<T> {
     pub bip: T
 }
 
+/// Implementations of error functions as a trait
+pub trait Erf {
+    /// Error function
+    fn erf(&self) -> Self;
+
+    /// Complimentary error function
+    fn erfc(&self) -> Self;
+}
+
+impl Erf for f64 {
+    fn erf(&self) -> f64 {
+        //! Uses [`cephes64::erf`](crate::cephes64::erf)
+        crate::cephes64::erf(*self)
+    }
+    fn erfc(&self) -> f64 {
+        //! Uses [`cephes64::erfc`](crate::cephes64::erfc) 
+        crate::cephes64::erfc(*self)
+    }
+}
+
 /// Implementations of gamma and beta functions as a trait
 pub trait Gamma {
     /// Gamma function
@@ -32,6 +52,12 @@ pub trait Gamma {
 
     /// Natural logarithm of the absolute value of the gamma function
     fn lgamma(&self) -> Self;
+
+    /// Regularized lower incomplete gamma function
+    fn igamma(&self, x: Self) -> Self;
+
+    /// Regularized upper incomplete gamma function
+    fn igammac(&self, x: Self) -> Self;
 
     /// Beta function
     fn beta(&self, other: Self) -> Self;
@@ -48,6 +74,14 @@ impl Gamma for f64 {
     fn lgamma(&self) -> f64 {
         //! Uses [`cephes64::lgam`](crate::cephes64::lgam) 
         crate::cephes64::lgam(*self)
+    }
+    fn igamma(&self, x: f64) -> f64 {
+        //! Uses [`cephes64::igam`](crate::cephes64::igam) 
+        crate::cephes64::igam(*self, x)
+    }
+    fn igammac(&self, x: f64) -> f64 {
+        //! Uses [`cephes64::igamc`](crate::cephes64::igamc) 
+        crate::cephes64::igamc(*self, x)
     }
     fn beta(&self, other: f64) -> f64 {
         //! Uses [`cephes64::beta`](crate::cephes64::beta)
