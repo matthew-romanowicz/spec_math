@@ -73,8 +73,7 @@ const BIGINV: f64 = 2.22044604925031308085e-16;
 /* Power series for incomplete beta integral.
 * Use when b*x is small and x not too close to 1.  */
 
-fn pseries(a: f64, b: f64, x: f64) -> f64
-{
+fn pseries(a: f64, b: f64, x: f64) -> f64 {
     //double s, t, u, v, n, t1, z, ai;
 
     let ai = 1.0 / a;
@@ -273,11 +272,83 @@ fn incbd(a: f64, b: f64, x: f64) -> f64 {
     ans
 }
 
+// $$\frac{\Gamma(a + b)}{\Gamma(a)\,\Gamma(b)}\,
+// \int_{0}^{x}{t^{a-1}\,(1-t)^{b-1}\,dt}$$
 
-pub fn incbet(aa: f64, bb: f64, xx: f64) -> f64
-{
-    // double a, b, t, x, xc, w, y;
-    // int flag;
+pub fn incbet(aa: f64, bb: f64, xx: f64) -> f64 {
+    //! Incomplete beta integral
+    //!
+    //! ## DESCRIPTION:
+    //!
+    //! Returns incomplete beta integral of the arguments, evaluated
+    //! from zero to x.  The function is defined as
+    //!
+    #![doc=include_str!("incbet.svg")]
+    //!
+    //! The domain of definition is 0 <= x <= 1.  In this
+    //! implementation a and b are restricted to positive values.
+    //! The integral from x to 1 may be obtained by the symmetry
+    //! relation
+    //!
+    //! `1 - incbet( a, b, x )  =  incbet( b, a, 1-x )`
+    //!
+    //! The integral is evaluated by a continued fraction expansion
+    //! or, when b*x is small, by a power series.
+    //!
+    //! ## ACCURACY:
+    //!
+    //! Tested at uniformly distributed random points (a,b,x) with a and b
+    //! in "domain" and x between 0 and 1.
+    //!
+    //! Relative error
+    //!
+    //!<table>
+    //! <tr>
+    //!     <th>Arithmetic</th>
+    //!     <th>Domain</th>
+    //!     <th># Trials</th>
+    //!     <th>Peak</th>
+    //!     <th>RMS</th>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>0, 5</td>
+    //!     <td>10000</td>
+    //!     <td>6.9e-15</td>
+    //!     <td>4.5e-16</td>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>0, 85</td>
+    //!     <td>250000</td>
+    //!     <td>2.2e-13</td>
+    //!     <td>1.7e-14</td>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>0, 1000</td>
+    //!     <td>30000</td>
+    //!     <td>5.3e-12</td>
+    //!     <td>6.3e-13</td>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>0, 10000</td>
+    //!     <td>250000</td>
+    //!     <td>9.3e-11</td>
+    //!     <td>7.1e-12</td>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>0, 100000</td>
+    //!     <td>10000</td>
+    //!     <td>8.7e-10</td>
+    //!     <td>4.8e-11</td>
+    //! </tr>
+    //!</table>
+    //!
+    //! Outputs smaller than the IEEE gradual underflow threshold
+    //! were excluded from these statistics.
 
     if aa <= 0.0 || bb <= 0.0 {
         //sf_error("incbet", SF_ERROR_DOMAIN, NULL);
