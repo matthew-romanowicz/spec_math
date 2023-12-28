@@ -9,6 +9,8 @@ mod cbrt;
 pub use crate::cephes64::cbrt::cbrt;
 mod polevl;
 use crate::cephes64::polevl::polevl;
+mod dawsn;
+pub use crate::cephes64::dawsn::dawsn;
 mod ndtr;
 pub use crate::cephes64::ndtr::{ndtr, erfc, erf};
 mod gamma;
