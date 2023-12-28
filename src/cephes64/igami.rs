@@ -6,10 +6,6 @@
 */
 
 
-// static double find_inverse_s(double, double);
-// static double didonato_sn(double, double, unsigned, double);
-// static double find_inverse_gamma(double, double, double);
-
 use crate::cephes64::consts::EULER;
 use crate::cephes64::polevl::polevl;
 use crate::cephes64::unity::log1p;

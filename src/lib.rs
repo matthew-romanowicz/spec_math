@@ -59,6 +59,12 @@ pub trait Gamma {
     /// Regularized upper incomplete gamma function
     fn igammac(&self, x: Self) -> Self;
 
+    /// Inverse of the regularized lower incomplete gamma function
+    fn igamma_inv(&self, x: Self) -> Self;
+
+    /// Inverse of the regularized upper incomplete gamma function
+    fn igammac_inv(&self, x: Self) -> Self;
+
     /// Beta function
     fn beta(&self, other: Self) -> Self;
 
@@ -83,6 +89,14 @@ impl Gamma for f64 {
         //! Uses [`cephes64::igamc`](crate::cephes64::igamc) 
         crate::cephes64::igamc(*self, x)
     }
+    fn igamma_inv(&self, x: f64) -> f64 {
+        //! Uses [`cephes64::igami`](crate::cephes64::igami) 
+        crate::cephes64::igami(*self, x)
+    }
+    fn igammac_inv(&self, x: f64) -> f64 {
+        //! Uses [`cephes64::igamci`](crate::cephes64::igamci) 
+        crate::cephes64::igamci(*self, x)
+    }
     fn beta(&self, other: f64) -> f64 {
         //! Uses [`cephes64::beta`](crate::cephes64::beta)
         crate::cephes64::beta(*self, other)
@@ -90,6 +104,33 @@ impl Gamma for f64 {
     fn lbeta(&self, other: f64) -> f64 {
         //! Uses [`cephes64::lbeta`](crate::cephes64::lbeta) 
         crate::cephes64::lbeta(*self, other)
+    }
+}
+
+/// Implementations of zeta functions as a trait
+pub trait Zeta {
+    /// Riemann zeta function
+    fn zeta(&self) -> Self;
+
+    /// Riemann zeta function minus 1
+    fn zetac(&self) -> Self;
+
+    /// Hurwitz zeta function
+    fn hzeta(&self, q: Self) -> Self;
+}
+
+impl Zeta for f64 {
+    fn zeta(&self) -> f64 {
+        //! Uses [`cephes64::reimann_zeta`](crate::cephes64::reimann_zeta)
+        crate::cephes64::riemann_zeta(*self)
+    }
+    fn zetac(&self) -> f64 {
+        //! Uses [`cephes64::zetac`](crate::cephes64::zetac)
+        crate::cephes64::zetac(*self)
+    }
+    fn hzeta(&self, q: f64) -> f64 {
+        //! Uses [`cephes64::zeta`](crate::cephes64::zeta)
+        crate::cephes64::zeta(*self, q)
     }
 }
 

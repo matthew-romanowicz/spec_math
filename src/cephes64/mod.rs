@@ -18,6 +18,8 @@ mod beta;
 pub use crate::cephes64::beta::{beta, lbeta};
 mod zeta;
 pub use crate::cephes64::zeta::zeta;
+mod zetac;
+pub use crate::cephes64::zetac::{zetac, riemann_zeta};
 mod chbevl;
 use crate::cephes64::chbevl::chbevl;
 mod unity;

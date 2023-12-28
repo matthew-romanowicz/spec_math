@@ -1,5 +1,6 @@
 #![allow(clippy::excessive_precision)]
 
+pub const M_E: f64 = 2.71828182845904523536;
 pub const M_2_PI: f64 = 0.63661977236758134308;  /* 2/pi */
 pub const M_PI: f64 = 3.14159265358979323846;
 pub const M_PI_2: f64 = 1.57079632679489661923;
