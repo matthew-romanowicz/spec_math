@@ -16,6 +16,8 @@ mod gamma;
 pub use crate::cephes64::gamma::{gamma, lgam};
 mod beta;
 pub use crate::cephes64::beta::{beta, lbeta};
+mod incbet;
+pub use crate::cephes64::incbet::incbet;
 mod zeta;
 pub use crate::cephes64::zeta::zeta;
 mod zetac;
