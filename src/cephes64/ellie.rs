@@ -8,7 +8,7 @@
 
 #![allow(clippy::excessive_precision)]
 
-use super::consts::{M_PI, M_PI_2, M_PI_4, MACHEP};
+use super::consts::{M_PI, M_PI_2, MACHEP};
 use super::unity::cosm1;
 use super::ellpk::ellpk;
 use super::ellpe::ellpe;

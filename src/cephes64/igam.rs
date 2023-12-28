@@ -76,7 +76,7 @@ const LARGERATIO: f64 = 4.5;
 
 use crate::cephes64::consts::{MACHEP, MAXLOG, M_PI};
 use crate::cephes64::gamma::lgam;
-use crate::cephes64::ndtr::{erf, erfc};
+use crate::cephes64::ndtr::erfc;
 use crate::cephes64::unity::{log1pmx, expm1, lgam1p};
 use crate::cephes64::lanczos::*;
 
@@ -306,7 +306,7 @@ pub fn igamc(a: f64, x: f64) -> f64 {
 * corrected from (15) and (16) in [2] by replacing exp(x - a) with
 * exp(a - x).
 */
-fn igam_fac(a: f64, x: f64) -> f64 {
+pub fn igam_fac(a: f64, x: f64) -> f64 {
 
     if (a - x).abs() > 0.4 * a.abs() {
         let ax = a * x.ln() - x - lgam(a);
@@ -318,7 +318,7 @@ fn igam_fac(a: f64, x: f64) -> f64 {
         }
     } else {
         let fac = a + LANCZOS_G - 0.5;
-        let mut res = (fac / 1.0_f64.exp()).sqrt() / lanczos_sum_expg_scaled(a);
+        let res = (fac / 1.0_f64.exp()).sqrt() / lanczos_sum_expg_scaled(a);
     
         if (a < 200.0) && (x < 200.0) {
             res * ((a - x).exp() * (x / fac).powf(a))
@@ -348,9 +348,9 @@ fn igamc_continued_fraction(a: f64, x: f64) -> f64
     let mut qkm1 = z * x;
     let mut ans = pkm1 / qkm1;
 
-    let mut t = 0.0; // Value doesn't matter
+    let mut t;
 
-    for i in 0..MAXITER {
+    for _ in 0..MAXITER {
         c += 1.0;
         y += 1.0;
         z += 2.0;
@@ -397,7 +397,7 @@ fn igam_series(a: f64, x: f64) -> f64 {
     let mut c = 1.0;
     let mut ans = 1.0;
 
-    for i in 0..MAXITER {
+    for _ in 0..MAXITER {
         r += 1.0;
         c *= x / r;
         ans += c;

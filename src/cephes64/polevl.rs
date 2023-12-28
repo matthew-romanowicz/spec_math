@@ -94,7 +94,7 @@ pub fn p1evl(x: f64, coef: &[f64], n: usize) -> f64
 /* Evaluate a rational function. See [1]. */
 
 pub fn ratevl(x: f64, num: &[f64], m: isize, denom: &[f64], n: isize) -> f64 {
-    
+
     let absx = x.abs();
 
     let (dir, mut p, y) = if absx > 1.0 {
@@ -107,7 +107,7 @@ pub fn ratevl(x: f64, num: &[f64], m: isize, denom: &[f64], n: isize) -> f64 {
     /* Evaluate the numerator */
     let mut num_ans = num[p as usize];
     p += dir;
-    for i in 1..=m {
+    for _ in 1..=m {
         num_ans = num_ans * y + num[p as usize];
         p += dir;
     }
@@ -121,7 +121,7 @@ pub fn ratevl(x: f64, num: &[f64], m: isize, denom: &[f64], n: isize) -> f64 {
 
     let mut denom_ans = denom[p as usize];
     p += dir;
-    for i in 1..=n {
+    for _ in 1..=n {
         denom_ans = denom_ans * y + denom[p as usize];
         p += dir;
     }

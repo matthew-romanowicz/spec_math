@@ -40,7 +40,7 @@ const STIR: [f64; 5] = [
 const MAXSTIR: f64 = 143.01608;
 const SQTPI: f64 = 2.50662827463100050242E0;
 
-use crate::cephes64::consts::{M_PI, MAXLOG};
+use crate::cephes64::consts::M_PI;
 use crate::cephes64::polevl::{polevl, p1evl};
 
 /* Gamma function computed by Stirling's formula.

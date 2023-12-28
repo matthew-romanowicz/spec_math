@@ -465,13 +465,13 @@ fn jvs(n: f64, x: f64) -> f64
         }
     }
 
-    let (mut t, mut ex) = frexp(0.5 * x);
+    let (_, mut ex) = frexp(0.5 * x);
     ex = (ex as f64 * n) as i32;
     if (ex > -1023) && (ex < 1023) && (n > 0.0) && (n < (MAXGAM - 1.0)) {
-        t = (0.5 * x).powf(n) / gamma(n + 1.0);
-        y *= t;
+        let t = (0.5 * x).powf(n) / gamma(n + 1.0);
+        y * t
     } else {
-        t = n * (0.5 * x).ln() - lgam_sgn(n + 1.0, &mut sgngam);
+        let mut t = n * (0.5 * x).ln() - lgam_sgn(n + 1.0, &mut sgngam);
         if y < 0.0 {
             sgngam = -sgngam;
             y = -y;
@@ -483,9 +483,8 @@ fn jvs(n: f64, x: f64) -> f64
             //sf_error("Jv", SF_ERROR_OVERFLOW, NULL);
             return f64::INFINITY;
         }
-        y = sgngam as f64 * t.exp();
+        sgngam as f64 * t.exp()
     }
-    return y;
 }
 
 /* Hankel's asymptotic expansion

@@ -84,8 +84,36 @@ const A: [f64; 12] = [
 
 /* 30 Nov 86 -- error in third coefficient fixed */
 
+// $$\mathrm{zeta}(x, q) = \sum_{k = 0}^{\infty}{(k + q)^{-x}}$$
+//
+// $$\mathrm{zeta}(x, q) = \sum_{k = 1}^{n}{(k + q)^{-x}} + 
+// \frac{(n + q)^{1 - x}}{x - 1}-\frac{1}{2\,(n + q)^x} + 
+// \sum_{j=1}^{\infty}{\frac{B_{2j}\,x\,(x + 1)\,...\,(x + 2\,j)}
+// {(2\,j)!\,(n + q)^{x + 2\,j + 1}}}$$
+
 
 pub fn zeta(x: f64, q: f64) -> f64 {
+    //! Riemann zeta function of two arguments
+    //!
+    //! ## DESCRIPTION:
+    //!
+    #![doc=include_str!("zeta.svg")]
+    //!
+    //! where x > 1 and q is not a negative integer or zero.
+    //! The Euler-Maclaurin summation formula is used to obtain
+    //! the expansion
+    //!
+    #![doc=include_str!("zeta2.svg")]
+    //!
+    //! where the B2j are Bernoulli numbers.  Note that (see zetac.c)
+    //! zeta(x,1) = zetac(x) + 1.
+    //!
+    //! ## ACCURACY:
+    //!
+    //! ## REFERENCE:
+    //!
+    //! Gradshteyn, I. S., and I. M. Ryzhik, Tables of Integrals,
+    //! Series, and Products, p. 1073; Academic Press, 1980.
 
     if x == 1.0 {
         return f64::INFINITY;

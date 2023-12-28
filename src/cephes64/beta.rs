@@ -219,11 +219,11 @@ pub fn lbeta(a: f64, b: f64) -> f64 {
     if y.abs() > MAXGAM || a.abs() > MAXGAM || b.abs() > MAXGAM {
         let mut sgngam: isize = 0; // Value doesn't matter
         y = lgam_sgn(y, &mut sgngam);
-        sign *= sgngam;		/* keep track of the sign */
+        //sign *= sgngam;		/* keep track of the sign */
         y = lgam_sgn(b, &mut sgngam) - y;
-        sign *= sgngam;
+        //sign *= sgngam;
         y = lgam_sgn(a, &mut sgngam) + y;
-        sign *= sgngam;
+        //sign *= sgngam;
         return y;
     }
 

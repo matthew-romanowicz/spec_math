@@ -4,17 +4,15 @@
 //! This module contains approximations of special functions exactly as seen in the CEPHES library. Algorithms are re-implemented in Rust but are unchanged.
 
 mod consts;
-use crate::cephes64::consts::*;
 mod cbrt;
 pub use crate::cephes64::cbrt::cbrt;
 mod polevl;
-use crate::cephes64::polevl::polevl;
 mod dawsn;
 pub use crate::cephes64::dawsn::dawsn;
 mod ndtr;
 pub use crate::cephes64::ndtr::{ndtr, erfc, erf};
 mod gamma;
-use crate::cephes64::gamma::{lgam_sgn};
+//use crate::cephes64::gamma::{lgam_sgn};
 pub use crate::cephes64::gamma::{gamma, lgam};
 mod beta;
 pub use crate::cephes64::beta::{beta, lbeta};
@@ -23,10 +21,12 @@ pub use crate::cephes64::zeta::zeta;
 mod chbevl;
 use crate::cephes64::chbevl::chbevl;
 mod unity;
-use crate::cephes64::unity::{log1p, log1pmx, expm1, cosm1, lgam1p};
+pub use crate::cephes64::unity::{log1p, log1pmx, expm1, cosm1, lgam1p};
 mod lanczos;
 mod igam;
 pub use crate::cephes64::igam::{igam, igamc};
+mod igami;
+pub use crate::cephes64::igami::{igami, igamci};
 mod ellpj;
 pub use crate::cephes64::ellpj::ellpj;
 mod ellpk;

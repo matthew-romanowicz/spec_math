@@ -65,7 +65,6 @@
 
 #![allow(clippy::excessive_precision)]
 
-use super::consts::M_PI_2;
 use super::polevl::polevl;
 
 static P: [f64; 11] = [
