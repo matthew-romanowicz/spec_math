@@ -67,41 +67,6 @@
 use crate::cephes64::consts::{M_PI, EULER};
 use crate::cephes64::polevl::polevl;
 
-pub fn modf(x: f64) -> (f64, f64) {
-    let rv2: f64;
-    let mut u = x.to_bits();
-    let mask: u64;
-    let e = ((u >> 52 & 0x7ff) as i32) - 0x3ff;
-
-    /* no fractional part */
-    if e >= 52 {
-        rv2 = x;
-        if e == 0x400 && (u << 12) != 0 {
-            /* nan */
-            return (x, rv2);
-        }
-        u &= 1 << 63;
-        return (f64::from_bits(u), rv2);
-    }
-
-    /* no integral part*/
-    if e < 0 {
-        u &= 1 << 63;
-        rv2 = f64::from_bits(u);
-        return (x, rv2);
-    }
-
-    mask = ((!0) >> 12) >> e;
-    if (u & mask) == 0 {
-        rv2 = x;
-        u &= 1 << 63;
-        return (f64::from_bits(u), rv2);
-    }
-    u &= !mask;
-    rv2 = f64::from_bits(u);
-    return (x - rv2, rv2);
-}
-
 const A: [f64; 7] = [
     8.33333333333333333333E-2,
     -2.10927960927960927961E-2,
@@ -177,13 +142,66 @@ fn psi_asy(x: f64) -> f64
     x.ln() - 0.5 / x - y
 }
 
+// $$\mathrm{psi}(x) = \frac{d}{dx}\,\ln(\Gamma(x))$$
+// $$\mathrm{psi}(x) = -\mathrm{EUL} + \sum_{k=1}^{n-1}{\frac{1}{k}}$$
+// $$\mathrm{psi}(x) = \ln(x) - \frac{1}{2}\,x + 
+// \sum_{k=1}^{\infty}{\frac{B_{2\,k}}{2\,k\,x^{2\,k}}}$$
+
 
 pub fn psi(x: f64) -> f64
 {
+    //! Psi (digamma) function
+    //!
+    //! ## DESCRIPTION:
+    //!
+    #![doc=include_str!("psi.svg")]
+    //!
+    //! is the logarithmic derivative of the gamma function.
+    //! For integer x,
+    //!
+    #![doc=include_str!("psi2.svg")]
+    //!
+    //! This formula is used for 0 < n <= 10.  If x is negative, it
+    //! is transformed to a positive argument by the reflection
+    //! formula  psi(1-x) = psi(x) + pi cot(pi x).
+    //! For general positive x, the argument is made greater than 10
+    //! using the recurrence  psi(x+1) = psi(x) + 1/x.
+    //! Then the following asymptotic expansion is applied:
+    //!
+    #![doc=include_str!("psi3.svg")]
+    //!
+    //! where the B2k are Bernoulli numbers.
+    //!
+    //! ## ACCURACY:
+    //!
+    //! Relative error (except absolute when |psi| < 1):
+    //!
+    //!<table>
+    //! <tr>
+    //!     <th>Arithmetic</th>
+    //!     <th>Domain</th>
+    //!     <th># Trials</th>
+    //!     <th>Peak</th>
+    //!     <th>RMS</th>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>0, 30</td>
+    //!     <td>30000</td>
+    //!     <td>1.3e-15</td>
+    //!     <td>1.4e-16</td>
+    //! </tr>    
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>-30, 0</td>
+    //!     <td>40000</td>
+    //!     <td>1.5e-15</td>
+    //!     <td>2.2e-16</td>
+    //! </tr>
+    //!</table>
+
     let mut y: f64 = 0.0;
     let mut x = x;
-    //double q, r;
-    //int i, n;
 
     if x.is_nan() {
         return x;

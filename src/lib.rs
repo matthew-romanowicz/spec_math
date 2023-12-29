@@ -96,6 +96,9 @@ pub trait Gamma {
 
     /// Inverse of the regularized upper incomplete gamma function
     fn igammac_inv(&self, x: Self) -> Self;
+
+    /// Digamma function
+    fn digamma(&self) -> Self;
 }
 
 impl Gamma for f64 {
@@ -122,6 +125,10 @@ impl Gamma for f64 {
     fn igammac_inv(&self, x: f64) -> f64 {
         //! Uses [`cephes64::igamci`](crate::cephes64::igamci) 
         crate::cephes64::igamci(*self, x)
+    }
+    fn digamma(&self) -> f64 {
+        //! Uses [`cephes64::psi`](crate::cephes64::psi)
+        crate::cephes64::psi(*self)
     }
 }
 

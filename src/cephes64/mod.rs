@@ -16,6 +16,8 @@ pub use crate::cephes64::ndtr::{ndtr, erfc, erf};
 mod gamma;
 //use crate::cephes64::gamma::{lgam_sgn};
 pub use crate::cephes64::gamma::{gamma, lgam};
+mod psi;
+pub use crate::cephes64::psi::psi;
 mod beta;
 pub use crate::cephes64::beta::{beta, lbeta};
 mod incbet;
