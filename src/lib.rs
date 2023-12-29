@@ -6,8 +6,8 @@
 //! use in Rust, potentially with modifications to correct bugs or improve performance
 //! from the original CEPHES implementation.
 //!
-//! Currently, the error functions, gamma functions, elliptic integrals, and bessel functions are 
-//! implemented.
+//! Currently, the error functions, gamma functions, beta functions, fresnel integrals, 
+//! elliptic integrals, and bessel functions are implemented.
 
 pub mod cephes64;
 
@@ -23,6 +23,11 @@ pub struct AiryOutput<T> {
     pub aip: T,
     pub bi: T,
     pub bip: T
+}
+
+pub struct FresnelOutput<T> {
+    pub s: T,
+    pub c: T
 }
 
 /// Implementations of error functions as a trait
@@ -45,7 +50,34 @@ impl Erf for f64 {
     }
 }
 
-/// Implementations of gamma and beta functions as a trait
+/// Implementations of Fresnel integrals as a trait
+pub trait Fresnel: Sized {
+    /// Fresnel integrals
+    fn fresnel(&self) -> FresnelOutput<Self>;
+}
+
+impl Fresnel for f64 {
+    fn fresnel(&self) -> FresnelOutput<f64> {
+        //! Uses [`cephes64::fresnl`](crate::cephes64::fresnl)
+        let res = crate::cephes64::fresnl(*self);
+        FresnelOutput::<f64> {s: res.0, c: res.1}
+    }
+}
+
+/// Implementations of Dawson integral as a trait
+pub trait Dawson {
+    /// Dawson integral
+    fn dawson(&self) -> Self;
+}
+
+impl Dawson for f64 {
+    fn dawson(&self) -> f64 {
+        //! Uses [`cephes64::dawsn`](crate::cephes64::dawsn)
+        crate::cephes64::dawsn(*self)
+    }
+}
+
+/// Implementations of gamma functions as a trait
 pub trait Gamma {
     /// Gamma function
     fn gamma(&self) -> Self;
@@ -64,12 +96,6 @@ pub trait Gamma {
 
     /// Inverse of the regularized upper incomplete gamma function
     fn igammac_inv(&self, x: Self) -> Self;
-
-    /// Beta function
-    fn beta(&self, other: Self) -> Self;
-
-    /// Natural logarithm of the absolute value of the beta function
-    fn lbeta(&self, other: Self) -> Self;
 }
 
 impl Gamma for f64 {
@@ -97,6 +123,21 @@ impl Gamma for f64 {
         //! Uses [`cephes64::igamci`](crate::cephes64::igamci) 
         crate::cephes64::igamci(*self, x)
     }
+}
+
+/// Implementations of beta functions as a trait
+pub trait Beta {
+    /// Beta function
+    fn beta(&self, other: Self) -> Self;
+
+    /// Natural logarithm of the absolute value of the beta function
+    fn lbeta(&self, other: Self) -> Self;
+
+    /// Incomplete beta function
+    fn ibeta(&self, other: Self, x: Self) -> Self;
+}
+
+impl Beta for f64 {
     fn beta(&self, other: f64) -> f64 {
         //! Uses [`cephes64::beta`](crate::cephes64::beta)
         crate::cephes64::beta(*self, other)
@@ -104,6 +145,11 @@ impl Gamma for f64 {
     fn lbeta(&self, other: f64) -> f64 {
         //! Uses [`cephes64::lbeta`](crate::cephes64::lbeta) 
         crate::cephes64::lbeta(*self, other)
+    }
+
+    fn ibeta(&self, other: f64, x: f64) -> f64 {
+        //! Uses [`cephes64::incbet`](crate::cephes64::incbet) 
+        crate::cephes64::incbet(*self, other, x)
     }
 }
 
