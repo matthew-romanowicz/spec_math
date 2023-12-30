@@ -344,6 +344,9 @@ pub trait Bessel: Sized {
 
     /// Bessel function of second kind of real order
     fn bessel_yv(&self, v: f64) -> Self;
+
+    /// Weighted integral of the Bessel function of the first kind
+    fn bessel_poly(&self, lambda: Self, nu: Self) -> Self;
 }
 
 impl Bessel for f64 {
@@ -415,5 +418,9 @@ impl Bessel for f64 {
     fn bessel_yv(&self, v: f64) -> f64 {
         //! Uses [`cephes64::yv`](crate::cephes64::yv)
         crate::cephes64::yv(v, *self)
+    }
+    fn bessel_poly(&self, lambda: f64, nu: f64) -> f64 {
+        //! Uses [`misc::besselpoly`](crate::misc::besselpoly)
+        crate::misc::besselpoly(*self, lambda, nu)
     }
 }
