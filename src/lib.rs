@@ -11,7 +11,7 @@
 
 pub mod utils;
 pub mod cephes64;
-//pub mod misc;
+pub mod misc;
 
 pub struct EllipJOutput<T> {
     pub sn: T,
@@ -44,6 +44,12 @@ pub trait Erf {
 
     /// Complimentary error function
     fn erfc(&self) -> Self;
+
+    /// Inverse error function
+    fn erf_inv(&self) -> Self;
+
+    /// Inverse complimentary error function
+    fn erfc_inv(&self) -> Self;
 }
 
 impl Erf for f64 {
@@ -54,6 +60,14 @@ impl Erf for f64 {
     fn erfc(&self) -> f64 {
         //! Uses [`cephes64::erfc`](crate::cephes64::erfc) 
         crate::cephes64::erfc(*self)
+    }
+    fn erf_inv(&self) -> f64 {
+        //! Uses [`misc::erfinv`](crate::misc::erfinv)
+        crate::misc::erfinv(*self)
+    }
+    fn erfc_inv(&self) -> f64 {
+        //! Uses [`misc::erfcinv`](crate::misc::erfcinv)
+        crate::misc::erfcinv(*self)
     }
 }
 
@@ -100,7 +114,7 @@ impl Dawson for f64 {
 
 /// Implementations of Normal (Gaussian) distribution as a trait
 pub trait NormDist {
-    /// Normal probability distribution function
+    /// Normal probability density function
     fn norm_pdf(&self) -> Self;
 
     /// Normal cumulative distribution function
@@ -113,7 +127,8 @@ pub trait NormDist {
 const SQRT_2PI_RECIP: f64 = 0.3989422804014327;
 impl NormDist for f64 {
     fn norm_pdf(&self) -> f64 {
-        SQRT_2PI_RECIP * (-0.5 * (*self) * (*self)).exp()
+        //! Uses [`misc::norm_pdf`](crate::misc::norm_pdf)
+        crate::misc::norm_pdf(*self)
     }
     fn norm_cdf(&self) -> f64 {
         //! Uses [`cephes64::ndtr`](crate::cephes64::ndtr)
