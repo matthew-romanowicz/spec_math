@@ -124,7 +124,6 @@ pub trait NormDist {
     fn norm_cdf_inv(&self) -> Self;
 }
 
-const SQRT_2PI_RECIP: f64 = 0.3989422804014327;
 impl NormDist for f64 {
     fn norm_pdf(&self) -> f64 {
         //! Uses [`misc::norm_pdf`](crate::misc::norm_pdf)
@@ -162,6 +161,9 @@ pub trait Gamma {
 
     /// Digamma function
     fn digamma(&self) -> Self;
+
+    /// Reciprocal of the gamma function
+    fn rgamma(&self) -> Self;
 }
 
 impl Gamma for f64 {
@@ -192,6 +194,10 @@ impl Gamma for f64 {
     fn digamma(&self) -> f64 {
         //! Uses [`cephes64::psi`](crate::cephes64::psi)
         crate::cephes64::psi(*self)
+    }
+    fn rgamma(&self) -> f64 {
+        //! Uses [`cephes64::rgamma`](crate::cephes64::rgamma)
+        crate::cephes64::rgamma(*self)
     }
 }
 
