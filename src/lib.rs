@@ -9,7 +9,9 @@
 //! Currently, the error functions, gamma functions, beta functions, fresnel integrals, 
 //! elliptic integrals, and bessel functions are implemented.
 
+pub mod utils;
 pub mod cephes64;
+//pub mod misc;
 
 pub struct EllipJOutput<T> {
     pub sn: T,
@@ -28,6 +30,11 @@ pub struct AiryOutput<T> {
 pub struct FresnelOutput<T> {
     pub s: T,
     pub c: T
+}
+
+pub struct SiCiOutput<T> {
+    pub si: T,
+    pub ci: T
 }
 
 /// Implementations of error functions as a trait
@@ -61,6 +68,20 @@ impl Fresnel for f64 {
         //! Uses [`cephes64::fresnl`](crate::cephes64::fresnl)
         let res = crate::cephes64::fresnl(*self);
         FresnelOutput::<f64> {s: res.0, c: res.1}
+    }
+}
+
+/// Implementations of sine and cosine integrals as a trait
+pub trait SiCi: Sized {
+    /// Fresnel integrals
+    fn sici(&self) -> SiCiOutput<Self>;
+}
+
+impl SiCi for f64 {
+    fn sici(&self) -> SiCiOutput<f64> {
+        //! Uses [`cephes64::sici`](crate::cephes64::sici)
+        let res = crate::cephes64::sici(*self);
+        SiCiOutput::<f64> {si: res.0, ci: res.1}
     }
 }
 

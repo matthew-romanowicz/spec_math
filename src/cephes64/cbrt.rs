@@ -5,33 +5,12 @@
 */
 
 
-//#include "mconf.h"
+use crate::utils::frexp;
 
 const CBRT2: f64 = 1.2599210498948731647672;
 const CBRT4: f64 = 1.5874010519681994747517;
 const CBRT2I: f64 = 0.79370052598409973737585;
 const CBRT4I: f64 = 0.62996052494743658238361;
-
-pub fn frexp(x: f64) -> (f64, i32) {
-    let mut y = x.to_bits();
-    let ee = ((y >> 52) & 0x7ff) as i32;
-
-    if ee == 0 {
-        if x != 0.0 {
-            let x1p64 = f64::from_bits(0x43f0000000000000);
-            let (x, e) = frexp(x * x1p64);
-            return (x, e - 64);
-        }
-        return (x, 0);
-    } else if ee == 0x7ff {
-        return (x, 0);
-    }
-
-    let e = ee - 0x3fe;
-    y &= 0x800fffffffffffff;
-    y |= 0x3fe0000000000000;
-    return (f64::from_bits(y), e);
-}
 
 pub fn scalbn(x: f64, mut n: i32) -> f64 {
     let x1p1023 = f64::from_bits(0x7fe0000000000000); // 0x1p1023 === 2 ^ 1023

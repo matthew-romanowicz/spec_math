@@ -3,29 +3,7 @@
 * Copyright 1984, 1987, 1989, 1992, 2000 by Stephen L. Moshier
 */
 
-pub fn frexp(x: f64) -> (f64, i32) {
-    let mut y = x.to_bits();
-    let ee = ((y >> 52) & 0x7ff) as i32;
-
-    if ee == 0 {
-        if x != 0.0 {
-            let x1p64 = f64::from_bits(0x43f0000000000000);
-            let (x, e) = frexp(x * x1p64);
-            return (x, e - 64);
-        }
-        return (x, 0);
-    } else if ee == 0x7ff {
-        return (x, 0);
-    }
-
-    let e = ee - 0x3fe;
-    y &= 0x800fffffffffffff;
-    y |= 0x3fe0000000000000;
-    return (f64::from_bits(y), e);
-}
-
-const MAXGAM: f64 = 171.624376956302725;
-
+use crate::utils::frexp;
 use crate::cephes64::consts::{M_PI, MACHEP, MAXLOG};
 use crate::cephes64::cbrt::cbrt;
 use crate::cephes64::polevl::polevl;
@@ -34,6 +12,7 @@ use crate::cephes64::gamma::{gamma, lgam_sgn};
 use crate::cephes64::j0::j0;
 use crate::cephes64::j1::j1;
 
+const MAXGAM: f64 = 171.624376956302725;
 const BIG: f64 = 1.44115188075855872E+17;
 
 pub fn jv(n: f64, x: f64) -> f64 {
