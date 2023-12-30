@@ -3,6 +3,8 @@
 * Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
 */
 
+#![allow(clippy::excessive_precision)]
+
 const C1: f64 = 0.35502805388781723926;
 const C2: f64 = 0.258819403792806798405;
 const SQRT3: f64 = 1.732050807568877293527;

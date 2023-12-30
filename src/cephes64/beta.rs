@@ -46,7 +46,7 @@
 * Direct inquiries to 30 Frost Street, Cambridge, MA 02140
 */
 
-// #include "mconf.h"
+#![allow(clippy::excessive_precision)]
 
 const MAXGAM: f64 = 171.624376956302725;
 
@@ -94,25 +94,21 @@ pub fn beta(a: f64, b: f64) -> f64 {
 
     let mut sign: isize = 1;
 
-    if a <= 0.0 {
-        if a == a.floor() {
-            if a == (a as isize) as f64 {
-                return beta_negint(a as isize, b);
-            } else {
-                //sf_error("beta", SF_ERROR_OVERFLOW, NULL);
-                return sign as f64 * f64::INFINITY;
-            }
+    if a <= 0.0 && a == a.floor() {
+        if a == (a as isize) as f64 {
+            return beta_negint(a as isize, b);
+        } else {
+            //sf_error("beta", SF_ERROR_OVERFLOW, NULL);
+            return sign as f64 * f64::INFINITY;
         }
     }
 
-    if b <= 0.0 {
-        if b == b.floor() {
-            if b == (b as isize) as f64 {
-                return beta_negint(b as isize, a);
-            } else {
-                //sf_error("beta", SF_ERROR_OVERFLOW, NULL);
-                return sign as f64 * f64::INFINITY;
-            }
+    if b <= 0.0 && b == b.floor() {
+        if b == (b as isize) as f64 {
+            return beta_negint(b as isize, a);
+        } else {
+            //sf_error("beta", SF_ERROR_OVERFLOW, NULL);
+            return sign as f64 * f64::INFINITY;
         }
     }
 
@@ -121,9 +117,7 @@ pub fn beta(a: f64, b: f64) -> f64 {
 
 
     if a.abs() < b.abs() {
-        let y = a; 
-        a = b; 
-        b = y;
+        std::mem::swap(&mut a, &mut b)
     }
 
     if a.abs() > ASYMP_FACTOR * b.abs() && a > ASYMP_FACTOR {
@@ -139,7 +133,7 @@ pub fn beta(a: f64, b: f64) -> f64 {
         sign *= sgngam;		/* keep track of the sign */
         y = lgam_sgn(b, &mut sgngam) - y;
         sign *= sgngam;
-        y = lgam_sgn(a, &mut sgngam) + y;
+        y += lgam_sgn(a, &mut sgngam);
         sign *= sgngam;
         if y > MAXLOG {
             //sf_error("beta", SF_ERROR_OVERFLOW, NULL);
@@ -179,25 +173,21 @@ pub fn lbeta(a: f64, b: f64) -> f64 {
 
     let mut sign: isize = 1;
 
-    if a <= 0.0 {
-        if a == a.floor() {
-            if a == (a as isize) as f64 {
-                return lbeta_negint(a as isize, b);
-            } else {
-                // sf_error("lbeta", SF_ERROR_OVERFLOW, NULL);
-                return sign as f64 * f64::INFINITY;
-            }
+    if a <= 0.0 && a == a.floor() {
+        if a == (a as isize) as f64 {
+            return lbeta_negint(a as isize, b);
+        } else {
+            // sf_error("lbeta", SF_ERROR_OVERFLOW, NULL);
+            return sign as f64 * f64::INFINITY;
         }
     }
 
-    if b <= 0.0 {
-        if b == b.floor() {
-            if b == (b as isize) as f64 {
-                return lbeta_negint(b as isize, a);
-            } else {
-                // sf_error("lbeta", SF_ERROR_OVERFLOW, NULL);
-                return sign as f64 * f64::INFINITY;
-            }
+    if b <= 0.0 && b == b.floor() {
+        if b == (b as isize) as f64 {
+            return lbeta_negint(b as isize, a);
+        } else {
+            // sf_error("lbeta", SF_ERROR_OVERFLOW, NULL);
+            return sign as f64 * f64::INFINITY;
         }
     }
 
@@ -205,9 +195,7 @@ pub fn lbeta(a: f64, b: f64) -> f64 {
     let mut b = b;
 
     if a.abs() < b.abs() {
-        let y = a; 
-        a = b; 
-        b = y;
+        std::mem::swap(&mut a, &mut b)
     }
 
     if a.abs() > ASYMP_FACTOR * b.abs() && a > ASYMP_FACTOR {
@@ -222,7 +210,7 @@ pub fn lbeta(a: f64, b: f64) -> f64 {
         //sign *= sgngam;		/* keep track of the sign */
         y = lgam_sgn(b, &mut sgngam) - y;
         //sign *= sgngam;
-        y = lgam_sgn(a, &mut sgngam) + y;
+        y += lgam_sgn(a, &mut sgngam);
         //sign *= sgngam;
         return y;
     }
@@ -286,7 +274,7 @@ fn lbeta_negint(a: isize, b: f64) -> f64
         lbeta((1 - a) as f64 - b, b)
     } else {
         //sf_error("lbeta", SF_ERROR_OVERFLOW, NULL);
-        return f64::INFINITY
+        f64::INFINITY
     }
 }
 

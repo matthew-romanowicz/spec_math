@@ -3,6 +3,8 @@
 * Copyright 1984, 1987, 1989, 1992, 2000 by Stephen L. Moshier
 */
 
+#![allow(clippy::excessive_precision)]
+
 use crate::utils::frexp;
 use crate::cephes64::consts::{M_PI, MACHEP, MAXLOG};
 use crate::cephes64::cbrt::cbrt;
@@ -170,7 +172,7 @@ pub fn jv(n: f64, x: f64) -> f64 {
         // case 13
         //}
 
-        if (an > 2.0 * y) || ((n >= 0.0) && (n < 20.0) && (y > 6.0) && (y < 20.0)) { // case 14
+        if (an > 2.0 * y) || ((0.0..20.0).contains(&n) && (y > 6.0) && (y < 20.0)) { // case 14
             /* Recur backwards from a larger value of n */
 
             // TODO: This case appears to give bad results
@@ -267,7 +269,7 @@ pub fn jv(n: f64, x: f64) -> f64 {
     }
 
     // case 34
-    return sign as f64 * y;
+    sign as f64 * y
 }
 
 /* Reduce the order by backward recurrence.
@@ -368,12 +370,10 @@ fn recur(n: &mut f64, x: f64, newn: &mut f64, cancel: isize) -> f64
         }
 
         /* Change n to n-1 if n < 0 and the continued fraction is small */
-        if nflag > 0 {
-            if ans.abs() < 0.125 {
-                nflag = -1;
-                *n = *n - 1.0;
-                continue;
-            }
+        if nflag > 0 && ans.abs() < 0.125 {
+            nflag = -1;
+            *n -= 1.0;
+            continue;
         }
         break;
     }
@@ -407,15 +407,13 @@ fn recur(n: &mut f64, x: f64, newn: &mut f64, cancel: isize) -> f64
     * on the theory that it may have less cancellation error.
     */
 
-    if cancel != 0 {
-        if (kf >= 0.0) && (pk.abs() > pkm1.abs()) {
-            k += 1.0;
-            pkm2 = pk;
-        }
+    if cancel != 0 && (kf >= 0.0) && (pk.abs() > pkm1.abs()) {
+        k += 1.0;
+        pkm2 = pk;
     }
     *newn = k;
 
-    return pkm2;
+    pkm2
 }
 
 

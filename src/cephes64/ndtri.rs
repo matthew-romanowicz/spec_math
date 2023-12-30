@@ -50,6 +50,8 @@
 * Direct inquiries to 30 Frost Street, Cambridge, MA 02140
 */
 
+#![allow(clippy::excessive_precision)]
+
 use crate::cephes64::polevl::{polevl, p1evl};
 
 /* sqrt(2pi) */
@@ -180,7 +182,7 @@ pub fn ndtri(y0: f64) -> f64
         return -f64::INFINITY;
     } else if y0 == 1.0 {
         return f64::INFINITY;
-    } else if y0 < 0.0 || y0 > 1.0 {
+    } else if !(0.0..=1.0).contains(&y0) {
         //sf_error("ndtri", SF_ERROR_DOMAIN, NULL);
         return f64::NAN;
     }
@@ -190,13 +192,13 @@ pub fn ndtri(y0: f64) -> f64
         y = 1.0 - y;
         code = false;
     } else if y > 0.13533528323661269189 {
-        y = y - 0.5;
+        y -= 0.5;
         let y2 = y * y;
         let x = y + y * (y2 * polevl(y2, &P0, 4) / p1evl(y2, &Q0, 8));
         return x * S2PI;
     }
 
-    let mut x = (-2.0 * y.ln()).sqrt();
+    let x = (-2.0 * y.ln()).sqrt();
     let x0 = x - x.ln() / x;
 
     let z = 1.0 / x;
@@ -205,7 +207,7 @@ pub fn ndtri(y0: f64) -> f64
     } else {
         z * polevl(z, &P2, 8) / p1evl(z, &Q2, 8)
     };
-    x = x0 - x1;
+
     if code {
         x1 - x0
     } else {

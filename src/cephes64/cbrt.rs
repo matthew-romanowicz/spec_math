@@ -4,6 +4,7 @@
 * Direct inquiries to 30 Frost Street, Cambridge, MA 02140
 */
 
+#![allow(clippy::excessive_precision)]
 
 use crate::utils::frexp;
 
@@ -147,10 +148,10 @@ pub fn cbrt(x: f64) -> f64
     x -= (x - (z / (x * x))) * 0.33333333333333333333;
 
     if sign < 0 {
-        x = -x;
+        -x
+    } else {
+        x
     }
-    
-    return x;
 }
 
 #[cfg(test)]

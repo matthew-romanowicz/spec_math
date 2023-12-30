@@ -56,9 +56,7 @@ pub fn ellie(phi: f64, m: f64) -> f64 {
     //! </tr>
     //!</table>
  
-    if phi.is_nan() || m.is_nan() {
-        return f64::NAN;
-    } else if m > 1.0 {
+    if phi.is_nan() || m.is_nan() || m > 1.0 {
         return f64::NAN;
     } else if phi.is_infinite() {
         return phi;
@@ -254,8 +252,8 @@ fn ellie_neg_m(phi: f64, m: f64) -> f64 {
         seriesn /= 4.0;
     }
  
-    let xf = (a0f - x) / af / ((1 << 2*n) as f64);
-    let yf = (a0f - y) / af / ((1 << 2*n) as f64);
+    let xf = (a0f - x) / af / ((1 << (2 * n)) as f64);
+    let yf = (a0f - y) / af / ((1 << (2 * n)) as f64);
     let zf = -(xf + yf);
  
     let e2f = xf*yf - zf*zf;
@@ -264,8 +262,8 @@ fn ellie_neg_m(phi: f64, m: f64) -> f64 {
     let mut ret = scalef * (1.0 - e2f/10.0 + e3f/14.0 + e2f*e2f/24.0
                      - 3.0*e2f*e3f/44.0) / af.sqrt();
  
-    let xd = (a0d - x) / ad / ((1 << 2*n) as f64);
-    let yd = (a0d - y) / ad / ((1 << 2*n) as f64);
+    let xd = (a0d - x) / ad / ((1 << (2 * n)) as f64);
+    let yd = (a0d - y) / ad / ((1 << (2 * n)) as f64);
     let zd = -(xd + yd)/3.0;
  
     let e2d = xd*yd - 6.0*zd*zd;
@@ -275,7 +273,7 @@ fn ellie_neg_m(phi: f64, m: f64) -> f64 {
  
     ret -= scaled * (1.0 - 3.0*e2d/14.0 + e3d/6.0 + 9.0*e2d*e2d/88.0
                       - 3.0*e4d/22.0 - 9.0*e2d*e3d/52.0 + 3.0*e5d/26.0)
-                      /((1 << 2*n) as f64) / ad / (ad.sqrt());
+                      /((1 << (2 * n)) as f64) / ad / (ad.sqrt());
     ret -= 3.0 * scaled * seriesd;
     ret
 }

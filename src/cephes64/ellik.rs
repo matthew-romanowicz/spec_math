@@ -196,8 +196,7 @@ pub fn ellik(phi: f64,  m: f64) -> f64
     if sign < 0 {
         temp = -temp;
     }
-    temp += npio2 * k;
-    return temp;
+    temp + npio2 * k
 }
 
 fn max3(a: f64, b: f64, c: f64) -> f64 {
@@ -276,8 +275,8 @@ fn ellik_neg_m(phi: f64, m: f64) -> f64
         n += 1;
         q /= 4.0;
     }
-    let x = (a0 - x) / a / ((1 << 2*n) as f64);
-    let y = (a0 - y) / a / ((1 << 2*n) as f64);
+    let x = (a0 - x) / a / ((1 << (2 * n)) as f64);
+    let y = (a0 - y) / a / ((1 << (2 * n)) as f64);
     let z = -(x + y);
 
     let e2 = x*y - z*z;

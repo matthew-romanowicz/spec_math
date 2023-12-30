@@ -4,6 +4,8 @@
 * Direct inquiries to 30 Frost Street, Cambridge, MA 02140
 */
 
+#![allow(clippy::excessive_precision)]
+
 const P: [f64; 7] = [
     1.60119522476751861407E-4,
     1.19135147006586384913E-3,
@@ -320,8 +322,7 @@ pub fn lgam_sgn(x: f64, sign: &mut isize) -> f64
 
     if x < -34.0 {
         let q = -x;
-        let w: f64;
-        w = lgam_sgn(q, sign);
+        let w: f64 = lgam_sgn(q, sign);
         let mut p = q.floor();
         if p == q {
         //lgsing:
@@ -376,7 +377,7 @@ pub fn lgam_sgn(x: f64, sign: &mut isize) -> f64
             return z.ln();
         }
         p -= 2.0;
-        x = x + p;
+        x += p;
         p = x * polevl(x, &B, 5) / p1evl(x, &C, 6);
         return z.ln() + p;
     }

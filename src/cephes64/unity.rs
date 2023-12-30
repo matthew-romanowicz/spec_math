@@ -14,6 +14,8 @@
 * - 06-10-2016: added lgam1p
 */
 
+#![allow(clippy::excessive_precision)]
+
 use super::consts::{MACHEP, M_PI_4, M_SQRT2, M_SQRT1_2, EULER};
 use super::polevl::{polevl, p1evl};
 use super::gamma::lgam;
@@ -52,12 +54,12 @@ const LQ: [f64; 6] = [
 pub fn log1p(x: f64) -> f64 {
 
     let mut z = 1.0 + x;
-    if (z < M_SQRT1_2) || (z > M_SQRT2) {
-        z.ln()
-    } else {
+    if (M_SQRT1_2..=M_SQRT2).contains(&z) {
         z = x * x;
         z = -0.5 * z + x * (z * polevl(x, &LP, 6) / p1evl(x, &LQ, 6));
         x + z
+    } else {
+        z.ln()
     }
 }
 
@@ -108,20 +110,18 @@ const EQ: [f64; 4] = [
 pub fn expm1(x: f64) -> f64 {
 
     if x.is_infinite() {
-        if x.is_nan() {
-            x
-        } else if x > 0.0 {
+        if x.is_nan() || x > 0.0 {
             x
         } else {
             -1.0
         }
-    } else if (x < -0.5) || (x > 0.5) {
-        x.exp() - 1.0
-    } else {
+    } else if (-0.5..=0.5).contains(&x) {
         let xx = x * x;
         let r = x * polevl(xx, &EP, 2);
         let r = r / (polevl(xx, &EQ, 3) - r);
         r + r
+    } else {
+        x.exp() - 1.0
     }
     
 }
@@ -138,11 +138,11 @@ static COSCOF: [f64; 7] = [
 
 pub fn cosm1(x: f64) -> f64 {
 
-    if (x < -M_PI_4) || (x > M_PI_4) {
-	    x.cos() - 1.0
-    } else {
+    if (-M_PI_4..=M_PI_4).contains(&x) {
         let xx = x * x;
         -0.5 * xx + xx * xx * polevl(xx, &COSCOF, 6)
+    } else {
+	    x.cos() - 1.0
     }
 }
 

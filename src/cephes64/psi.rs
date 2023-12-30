@@ -64,6 +64,8 @@
 * LICENSE_1_0.txt or copy at https://www.boost.org/LICENSE_1_0.txt)
 */
 
+#![allow(clippy::excessive_precision)]
+
 use crate::cephes64::consts::{M_PI, EULER};
 use crate::cephes64::polevl::polevl;
 
@@ -203,9 +205,7 @@ pub fn psi(x: f64) -> f64
     let mut y: f64 = 0.0;
     let mut x = x;
 
-    if x.is_nan() {
-        return x;
-    } else if x == f64::INFINITY {
+    if x.is_nan() || x == f64::INFINITY {
         return x;
     } else if x == -f64::INFINITY {
         return f64::NAN;
@@ -241,7 +241,7 @@ pub fn psi(x: f64) -> f64
                 y += 1.0 / x;
             }
         }
-        if 1.0 <= x && x <= 2.0 {
+        if (1.0..=2.0).contains(&x) {
             y + digamma_imp_1_2(x)
         } else {
             /* x is large, use the asymptotic series */

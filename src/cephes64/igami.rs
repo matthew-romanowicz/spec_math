@@ -5,6 +5,7 @@
 *  LICENSE_1_0.txt or copy at https://www.boost.org/LICENSE_1_0.txt)
 */
 
+#![allow(clippy::excessive_precision)]
 
 use crate::cephes64::consts::EULER;
 use crate::cephes64::polevl::polevl;
@@ -242,9 +243,7 @@ fn find_inverse_gamma(a: f64, p: f64, q: f64) -> f64
 
 pub fn igami(a: f64, p: f64) -> f64 {
 
-    if a.is_nan() || p.is_nan() {
-        return f64::NAN;
-    } else if (a < 0.0) || (p < 0.0) || (p > 1.0) {
+    if a.is_nan() || p.is_nan() || (a < 0.0) || !(0.0..=1.0).contains(&p) {
         //sf_error("gammaincinv", SF_ERROR_DOMAIN, NULL);
         return f64::NAN;
     } else if p == 0.0 {
@@ -267,9 +266,9 @@ pub fn igami(a: f64, p: f64) -> f64 {
         let fpp_fp = -1.0 + (a - 1.0) / x;
         if fpp_fp.is_infinite() {
             /* Resort to Newton's method in the case of overflow */
-            x = x - f_fp;
+            x -= f_fp;
         } else {
-            x = x - f_fp / (1.0 - 0.5 * f_fp * fpp_fp);
+            x -= f_fp / (1.0 - 0.5 * f_fp * fpp_fp);
         }
     }
 
@@ -284,7 +283,7 @@ pub fn igamci(a: f64, q: f64) -> f64 {
     if a.is_nan() || q.is_nan() {
         return f64::NAN;
     }
-    else if (a < 0.0) || (q < 0.0) || (q > 1.0) {
+    else if (a < 0.0) || !(0.0..=1.0).contains(&q) {
         //sf_error("gammainccinv", SF_ERROR_DOMAIN, NULL);
     }
     else if q == 0.0 {
@@ -306,9 +305,9 @@ pub fn igamci(a: f64, q: f64) -> f64 {
         let f_fp = -(igamc(a, x) - q) * x / fac;
         let fpp_fp = -1.0 + (a - 1.0) / x;
         if fpp_fp.is_infinite() {
-            x = x - f_fp;
+            x -= f_fp;
         } else {
-            x = x - f_fp / (1.0 - 0.5 * f_fp * fpp_fp);
+            x -= f_fp / (1.0 - 0.5 * f_fp * fpp_fp);
         }
     }
 

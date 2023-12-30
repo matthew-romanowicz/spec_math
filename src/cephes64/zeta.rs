@@ -60,6 +60,8 @@
 * Direct inquiries to 30 Frost Street, Cambridge, MA 02140
 */
 
+#![allow(clippy::excessive_precision)]
+
 use crate::cephes64::consts::MACHEP;
 
 /* Expansion coefficients
@@ -162,11 +164,11 @@ pub fn zeta(x: f64, q: f64) -> f64 {
     s -= 0.5 * b;
     a = 1.0;
     let mut k = 0.0;
-    for i in 0..12 {
+    for a_i in &A {
         a *= x + k;
         b /= w;
-        let t = a * b / A[i];
-        s = s + t;
+        let t = a * b / a_i;
+        s += t;
         if (t / s).abs() < MACHEP {
             return s;
         }
@@ -177,7 +179,7 @@ pub fn zeta(x: f64, q: f64) -> f64 {
     }
 
     // TODO: Find a way to test this case
-    return s;
+    s
 }
 
 #[cfg(test)]

@@ -76,6 +76,8 @@
 *
 */
 
+#![allow(clippy::excessive_precision)]
+
 const EUL: f64 =  5.772156649015328606065e-1;
 const MAXFAC: isize = 31;
 
@@ -201,8 +203,8 @@ pub fn kn(nn: isize, x: f64) -> f64 {
             let mut zn = 1.0;
             let mut t;
             for i in 1..n {
-                nk1f = nk1f / (n - i) as f64;
-                kf = kf * (i as f64);
+                nk1f /= (n - i) as f64;
+                kf *= i as f64;
                 zn *= z;
                 t = nk1f * zn / kf;
                 s += t;
@@ -233,7 +235,7 @@ pub fn kn(nn: isize, x: f64) -> f64 {
         pn = pk;
         1.0
     } else {
-        pn = pn + 1.0 / (n as f64);
+        pn += 1.0 / (n as f64);
         1.0 / fn_
     };
     let mut s = (pk + pn - tlg) * t;
@@ -256,7 +258,7 @@ pub fn kn(nn: isize, x: f64) -> f64 {
     
     ans += s;
 
-    return ans;
+    ans
 }
 
 // TODO: This doesn't line up exactly with output from the C CEHPES library

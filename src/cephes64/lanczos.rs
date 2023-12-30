@@ -30,6 +30,8 @@
 * Use for double precision.
 */
 
+#![allow(clippy::excessive_precision)]
+
 const LANCZOS_NUM: [f64; 13] = [
     2.506628274631000270164908177133837338626,
     210.8242777515793458725097339207133627117,
@@ -138,14 +140,14 @@ use crate::cephes64::polevl::ratevl;
 
 pub fn lanczos_sum(x: f64) -> f64
 {
-    return ratevl(x, &LANCZOS_NUM, LANCZOS_NUM.len() as isize - 1, &LANCZOS_DENOM, LANCZOS_DENOM.len() as isize - 1);
+    ratevl(x, &LANCZOS_NUM, LANCZOS_NUM.len() as isize - 1, &LANCZOS_DENOM, LANCZOS_DENOM.len() as isize - 1)
 }
 
 
 pub fn lanczos_sum_expg_scaled(x: f64) -> f64
 {
-    return ratevl(x, &LANCZOS_SUM_EXPG_SCALED_NUM, LANCZOS_SUM_EXPG_SCALED_NUM.len() as isize - 1,
-        &LANCZOS_SUM_EXPG_SCALED_DENOM, LANCZOS_SUM_EXPG_SCALED_DENOM.len() as isize - 1);
+    ratevl(x, &LANCZOS_SUM_EXPG_SCALED_NUM, LANCZOS_SUM_EXPG_SCALED_NUM.len() as isize - 1,
+        &LANCZOS_SUM_EXPG_SCALED_DENOM, LANCZOS_SUM_EXPG_SCALED_DENOM.len() as isize - 1)
 }
 
 
@@ -156,7 +158,7 @@ pub fn lanczos_sum_near_1(dx: f64) -> f64
     for k in 1..=LANCZOS_SUM_NEAR_1_D.len() {
         result += (-LANCZOS_SUM_NEAR_1_D[k-1] * dx) / (k as f64 * dx + k as f64 * k as f64);
     }
-    return result;
+    result
 }
 
 
@@ -168,5 +170,5 @@ pub fn lanczos_sum_near_2(dx: f64) -> f64
     for k in 1..=LANCZOS_SUM_NEAR_2_D.len() {
         result += (-LANCZOS_SUM_NEAR_2_D[k-1] * dx) / (x + k as f64 * x + k as f64 * k as f64 - 1.0);
     }
-    return result;
+    result
 }

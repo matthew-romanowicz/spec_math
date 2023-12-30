@@ -1,50 +1,10 @@
-/*                                                     dawsn.c
-*
-*     Dawson's Integral
-*
-*
-*
-* SYNOPSIS:
-*
-* double x, y, dawsn();
-*
-* y = dawsn( x );
-*
-*
-*
-* DESCRIPTION:
-*
-* Approximates the integral
-*
-*                             x
-*                             -
-*                      2     | |        2
-*  dawsn(x)  =  exp( -x  )   |    exp( t  ) dt
-*                          | |
-*                           -
-*                           0
-*
-* Three different rational approximations are employed, for
-* the intervals 0 to 3.25; 3.25 to 6.25; and 6.25 up.
-*
-*
-* ACCURACY:
-*
-*                      Relative error:
-* arithmetic   domain     # trials      peak         rms
-*    IEEE      0,10        10000       6.9e-16     1.0e-16
-*
-*
-*/
-
-/*                                                     dawsn.c */
-
-
 /*
 * Cephes Math Library Release 2.1:  January, 1989
 * Copyright 1984, 1987, 1989 by Stephen L. Moshier
 * Direct inquiries to 30 Frost Street, Cambridge, MA 02140
 */
+
+#![allow(clippy::excessive_precision)]
 
 use crate::cephes64::polevl::{polevl, p1evl};
 

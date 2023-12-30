@@ -62,9 +62,7 @@
 *   are very close.
 */
 
-// #include "mconf.h"
-// #include "lanczos.h"
-// #include "igam.h"
+#![allow(clippy::excessive_precision)]
 
 const MAXITER: usize = 2000;
 const IGAM: isize = 1;
@@ -182,11 +180,10 @@ pub fn igam(a: f64, x: f64) -> f64 {
     } else {
         /* Asymptotic regime where a ~ x; see [2]. */
         let absxma_a = (x - a).abs() / a;
-        if (a > SMALL) && (a < LARGE) && (absxma_a < SMALLRATIO) {
+        if (a > SMALL && a < LARGE && absxma_a < SMALLRATIO) ||
+            (a > LARGE && absxma_a < LARGERATIO / a.sqrt()) {
             asymptotic_series(a, x, IGAM)
-        } else if (a > LARGE) && (absxma_a < LARGERATIO / a.sqrt()) {
-            asymptotic_series(a, x, IGAM)
-        } else if (x > 1.0) && (x > a) {
+        } else if x > 1.0 && x > a {
             1.0 - igamc(a, x)
         } else {
             igam_series(a, x)
@@ -268,11 +265,9 @@ pub fn igamc(a: f64, x: f64) -> f64 {
     } else {
         /* Asymptotic regime where a ~ x; see [2]. */
         let absxma_a = (x - a).abs() / a;
-        if (a > SMALL) && (a < LARGE) && (absxma_a < SMALLRATIO) {
+        if (a > SMALL && a < LARGE && absxma_a < SMALLRATIO) ||
+            (a > LARGE && absxma_a < LARGERATIO / a.sqrt()) {
             asymptotic_series(a, x, IGAMC)
-        } else if (a > LARGE) && (absxma_a < LARGERATIO / a.sqrt()) {
-            asymptotic_series(a, x, IGAMC)
-
         /* Everywhere else; see [2]. */
         } else if x > 1.1 { 
             if x < a {
@@ -286,12 +281,10 @@ pub fn igamc(a: f64, x: f64) -> f64 {
             } else {
                 igamc_series(a, x)
             }
+        } else if x * 1.1 < a {
+            1.0 - igam_series(a, x)
         } else {
-            if x * 1.1 < a {
-                1.0 - igam_series(a, x)
-            } else {
-                igamc_series(a, x)
-            }
+            igamc_series(a, x)
         }
     }
 
@@ -461,14 +454,14 @@ fn asymptotic_series(a: f64, x: f64, func: isize) -> f64 {
 
     let res = 0.5 * erfc(sgn as f64 * eta * (a / 2.0).sqrt());
 
-    for k in 0..K {
-        let mut ck = D[k][0];
+    for d in D.iter() {
+        let mut ck = d[0];
         for n in 1..N {
             if n > maxpow {
                 etapow[n] = eta * etapow[n-1];
                 maxpow += 1;
             }
-            let ckterm = D[k][n]*etapow[n];
+            let ckterm = d[n]*etapow[n];
             ck += ckterm;
             if ckterm.abs() < MACHEP * ck.abs() {
                 break;

@@ -59,9 +59,10 @@
 
 // from https://github.com/scipy/scipy/blob/c4ce0c4560bc635867512c4d2ea6db6f666d3eeb/scipy/special/cephes/polevl.h#L67
 pub fn polevl(x: f64, coef: &[f64], n: usize) -> f64 {
-    let mut ans = coef[0];
-    for i in 1..=n {
-        ans = ans * x + coef[i];
+    let mut coef_iter = coef.iter().take(n+1);
+    let mut ans = *coef_iter.next().unwrap();
+    for i in coef_iter {
+        ans = ans * x + *i;
     }
     ans
 }
@@ -83,10 +84,11 @@ pub fn polevl(x: f64, coef: &[f64], n: usize) -> f64 {
 
 pub fn p1evl(x: f64, coef: &[f64], n: usize) -> f64
 {
-    let mut ans = x + coef[0];
+    let mut coef_iter = coef.iter().take(n);
+    let mut ans = x + *coef_iter.next().unwrap();
 
-    for i in 1..n {
-        ans = ans * x + coef[i];
+    for i in coef_iter {
+        ans = ans * x + *i;
     }
     ans
 }
@@ -138,18 +140,18 @@ pub fn ratevl(x: f64, num: &[f64], m: isize, denom: &[f64], n: isize) -> f64 {
 mod polevl_tests {
     use super::*;
 
-    // const TAYLOR0: [f64; 10] = [
-    //     -1.0000000009110164892,
-    //     -1.0000000057646759799,
-    //     -9.9999983138417361078e-1,
-    //     -1.0000013011460139596,
-    //     -1.000001940896320456,
-    //     -9.9987929950057116496e-1,
-    //     -1.000785194477042408,
-    //     -1.0031782279542924256,
-    //     -9.1893853320467274178e-1,
-    //     -1.5,
-    // ];
+    const TAYLOR0: [f64; 10] = [
+        -1.0000000009110164892,
+        -1.0000000057646759799,
+        -9.9999983138417361078e-1,
+        -1.0000013011460139596,
+        -1.000001940896320456,
+        -9.9987929950057116496e-1,
+        -1.000785194477042408,
+        -1.0031782279542924256,
+        -9.1893853320467274178e-1,
+        -1.5,
+    ];
 
     // #[test]
     // fn polevl_timing() {
@@ -167,21 +169,10 @@ mod polevl_tests {
     //     let now = std::time::Instant::now();
     //     for i in 0..100000 {
     //         let x = i as f64 * 0.01 / 100000.0 - 0.01;
-    //         s += (((((((((-1.0000000009110164892 
-    //                 * x + -1.0000000057646759799)
-    //                 * x + -9.9999983138417361078e-1)
-    //                 * x + -1.0000013011460139596)
-    //                 * x + -1.000001940896320456)
-    //                 * x + -9.9987929950057116496e-1)
-    //                 * x + -1.000785194477042408)
-    //                 * x + -1.0031782279542924256)
-    //                 * x + -9.1893853320467274178e-1)
-    //                 * x + -1.5);
+    //         s += polevl2(x, &TAYLOR0, 9);
     //     }
     //     println!("Time: {}", now.elapsed().as_micros());
     //     println!("Sum: {}", s);
-
-    //     todo!();
     // }
 
     #[test]

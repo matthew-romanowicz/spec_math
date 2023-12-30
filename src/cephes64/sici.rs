@@ -4,6 +4,8 @@
 * Direct inquiries to 30 Frost Street, Cambridge, MA 02140
 */
 
+#![allow(clippy::excessive_precision)]
+
 const SN: [f64; 6] = [
     -8.39167827910303881427E-11,
     4.62591714427012837309E-8,

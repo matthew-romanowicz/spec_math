@@ -53,8 +53,7 @@
 * Direct inquiries to 30 Frost Street, Cambridge, MA 02140
 */
 
-//#include <float.h>		/* DBL_EPSILON */
-//#include "mconf.h"
+#![allow(clippy::excessive_precision)]
 
 use crate::cephes64::consts::{MAXLOG, M_SQRT1_2};
 use crate::cephes64::polevl::{polevl, p1evl};
@@ -119,8 +118,6 @@ const U: [f64; 5] = [
     4.92673942608635921086E4
 ];
 
-const UTHRESH: f64 = 37.519379347;
-
 // $$\mathrm{ndtr}(x) = \frac{1}{\sqrt{2\,\pi}}\,\int_{-\infty}^{x}
 // {\exp\left(-\frac{1}{2}\,t^2\right)\,dt} = \frac{1 + \mathrm{erf}(z)}{2} = 
 // \frac{\mathrm{erfc}(z)}{2}$$
@@ -170,12 +167,10 @@ pub fn ndtr(a: f64) -> f64
 
     if z < M_SQRT1_2 {
         0.5 + 0.5 * erf(x)
+    } else if x > 0.0 {
+        1.0 - 0.5 * erfc(z)
     } else {
-        if x > 0.0 {
-            1.0 - 0.5 * erfc(z)
-        } else {
-            0.5 * erfc(z)
-        }
+        0.5 * erfc(z)
     }
 }
 

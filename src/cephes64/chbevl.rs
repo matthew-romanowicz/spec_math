@@ -59,14 +59,15 @@
 
 pub fn chbevl(x: f64, array: &[f64], n: usize) -> f64
 {
-    let mut b0 = array[0];
+    let mut array_iter = array.iter().take(n);
+    let mut b0 = *array_iter.next().unwrap();
     let mut b1 = 0.0;
     let mut b2 = 0.0; // Value not needed, just declaring the variable
 
-    for i in 1..n {
+    for i in array_iter {
         b2 = b1;
         b1 = b0;
-        b0 = x * b1 - b2 + array[i];
+        b0 = x * b1 - b2 + *i;
     }
 
     0.5 * (b0 - b2)

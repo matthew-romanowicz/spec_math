@@ -59,7 +59,7 @@
 * Copyright 1984, 1995 by Stephen L. Moshier
 */
 
-//#include "mconf.h"
+#![allow(clippy::excessive_precision)]
 
 const MAXGAM: f64 = 171.624376956302725;
 
@@ -211,7 +211,7 @@ fn incbd(a: f64, b: f64, x: f64) -> f64 {
     let z = x / (1.0 - x);
     let mut ans: f64 = 1.0;
     let mut r: f64 = 1.0;
-    let mut thresh = 3.0 * MACHEP;
+    let thresh = 3.0 * MACHEP;
     for _ in 0..300 {
 
         let xk = -(z * k1 * k2) / (k3 * k4);

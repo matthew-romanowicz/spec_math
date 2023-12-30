@@ -46,6 +46,8 @@
 * Direct inquiries to 30 Frost Street, Cambridge, MA 02140
 */
 
+#![allow(clippy::excessive_precision)]
+
 /* Riemann zeta(x) - 1
 * for integer arguments between 0 and 30.
 */
@@ -339,7 +341,8 @@ fn zeta_reflection(x: f64) -> f64 {
     * overflows, then there was truly no avoiding it.
     */
     let large_term = base.powf(0.5 * x + 0.25);
-    return (large_term * small_term) * large_term;
+    
+    (large_term * small_term) * large_term
 }
 
 #[cfg(test)]

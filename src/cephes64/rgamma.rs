@@ -4,6 +4,8 @@
 * Direct inquiries to 30 Frost Street, Cambridge, MA 02140
 */
 
+#![allow(clippy::excessive_precision)]
+
 /* Chebyshev coefficients for reciprocal Gamma function
 * in interval 0 to 1.  Function is 1/(x Gamma(x)) - 1
 */

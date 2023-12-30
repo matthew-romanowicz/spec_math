@@ -6,15 +6,17 @@ pub fn frexp(x: f64) -> (f64, i32) {
         if x != 0.0 {
             let x1p64 = f64::from_bits(0x43f0000000000000);
             let (x, e) = frexp(x * x1p64);
-            return (x, e - 64);
+            (x, e - 64)
+        } else {
+            (x, 0)
         }
-        return (x, 0);
     } else if ee == 0x7ff {
-        return (x, 0);
+        (x, 0)
+    } else {
+        let e = ee - 0x3fe;
+        y &= 0x800fffffffffffff;
+        y |= 0x3fe0000000000000;
+        
+        (f64::from_bits(y), e)
     }
-
-    let e = ee - 0x3fe;
-    y &= 0x800fffffffffffff;
-    y |= 0x3fe0000000000000;
-    return (f64::from_bits(y), e);
 }

@@ -16,71 +16,71 @@ use super::consts::{M_PI_2, MACHEP};
 
 pub fn ellpj(u: f64, m: f64) -> (f64, f64, f64, f64) // sn, cn, dn, ph
 {
-//! Jacobian elliptic functions
-//!
-//! ## Description:
-//! 
-//! Evaluates the Jacobian elliptic functions sn(u|m), cn(u|m), and dn(u|m) of parameter `m` between `0` and `1`, and real argument `u`.
-//!
-//! These functions are periodic, with quarter-period on the real axis equal to the complete elliptic integral `ellpk(m)`.
-//!
-//! Relation to incomplete elliptic integral:
-//! If u = ellik(phi,m), then sn(u|m) = sin(phi),
-//! and cn(u|m) = cos(phi).  Phi is called the amplitude of u.
-//!
-//! Computation is by means of the arithmetic-geometric mean algorithm, except when 
-//! `m` is within `1e-9` of `0` or `1`.  In the latter case with `m` close to `1`, the approximation 
-//! applies only for `phi < pi/2`.
-//!
-//! ## Accuracy
-//!
-//! Tested at random points with `u` between `0` and `10`, `m` between `0` and `1`.
-//!
-//! Relative Error:
-//!<table>
-//! <tr>
-//!     <th>Arithmetic</th>
-//!     <th>Function</th>
-//!     <th># Trials</th>
-//!     <th>Peak</th>
-//!     <th>RMS</th>
-//! </tr>
-//! <tr>
-//!     <td>IEEE</td>
-//!     <td>phi</td>
-//!     <td>10000</td>
-//!     <td>9.2e-16*</td>
-//!     <td>1.4e-16*</td>
-//! </tr>
-//! <tr>
-//!     <td>IEEE</td>
-//!     <td>sn</td>
-//!     <td>10000</td>
-//!     <td>4.1e-15</td>
-//!     <td>4.6e-16</td>
-//! </tr>
-//! <tr>
-//!     <td>IEEE</td>
-//!     <td>cn</td>
-//!     <td>10000</td>
-//!     <td>3.6e-15</td>
-//!     <td>4.4e-16</td>
-//! </tr>
-//! <tr>
-//!     <td>IEEE</td>
-//!     <td>dn</td>
-//!     <td>10000</td>
-//!     <td>1.3e-12</td>
-//!     <td>1.8e-14</td>
-//! </tr>
-//!</table>
-//!
-//! Peak error observed in consistency check using addition theorem for sn(u+v) 
-//! was `4e-16` (absolute).  Also tested by the above relation to the incomplete 
-//! elliptic integral. Accuracy deteriorates when `u` is large.
+    //! Jacobian elliptic functions
+    //!
+    //! ## Description:
+    //! 
+    //! Evaluates the Jacobian elliptic functions sn(u|m), cn(u|m), and dn(u|m) of parameter `m` between `0` and `1`, and real argument `u`.
+    //!
+    //! These functions are periodic, with quarter-period on the real axis equal to the complete elliptic integral `ellpk(m)`.
+    //!
+    //! Relation to incomplete elliptic integral:
+    //! If u = ellik(phi,m), then sn(u|m) = sin(phi),
+    //! and cn(u|m) = cos(phi).  Phi is called the amplitude of u.
+    //!
+    //! Computation is by means of the arithmetic-geometric mean algorithm, except when 
+    //! `m` is within `1e-9` of `0` or `1`.  In the latter case with `m` close to `1`, the approximation 
+    //! applies only for `phi < pi/2`.
+    //!
+    //! ## Accuracy
+    //!
+    //! Tested at random points with `u` between `0` and `10`, `m` between `0` and `1`.
+    //!
+    //! Relative Error:
+    //!<table>
+    //! <tr>
+    //!     <th>Arithmetic</th>
+    //!     <th>Function</th>
+    //!     <th># Trials</th>
+    //!     <th>Peak</th>
+    //!     <th>RMS</th>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>phi</td>
+    //!     <td>10000</td>
+    //!     <td>9.2e-16*</td>
+    //!     <td>1.4e-16*</td>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>sn</td>
+    //!     <td>10000</td>
+    //!     <td>4.1e-15</td>
+    //!     <td>4.6e-16</td>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>cn</td>
+    //!     <td>10000</td>
+    //!     <td>3.6e-15</td>
+    //!     <td>4.4e-16</td>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>dn</td>
+    //!     <td>10000</td>
+    //!     <td>1.3e-12</td>
+    //!     <td>1.8e-14</td>
+    //! </tr>
+    //!</table>
+    //!
+    //! Peak error observed in consistency check using addition theorem for sn(u+v) 
+    //! was `4e-16` (absolute).  Also tested by the above relation to the incomplete 
+    //! elliptic integral. Accuracy deteriorates when `u` is large.
 
     /* Check for special cases */
-    if m < 0.0 || m > 1.0 || m.is_nan() {
+    if !(0.0..=1.0).contains(&m) || m.is_nan() {
         //sf_error("ellpj", SF_ERROR_DOMAIN, NULL);
         (f64::NAN, f64::NAN, f64::NAN, f64::NAN)
     } else if m < 1.0e-9 {

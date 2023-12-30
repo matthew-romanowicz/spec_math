@@ -7,7 +7,7 @@
 //! from the original CEPHES implementation.
 //!
 //! Currently, the error functions, gamma functions, beta functions, fresnel integrals, 
-//! elliptic integrals, and bessel functions are implemented.
+//! sine and cosine integrals, elliptic integrals, and bessel functions are implemented.
 
 pub mod utils;
 pub mod cephes64;
