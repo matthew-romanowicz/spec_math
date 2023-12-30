@@ -121,10 +121,44 @@ const U: [f64; 5] = [
 
 const UTHRESH: f64 = 37.519379347;
 
+// $$\mathrm{ndtr}(x) = \frac{1}{\sqrt{2\,\pi}}\,\int_{-\infty}^{x}
+// {\exp\left(-\frac{1}{2}\,t^2\right)\,dt} = \frac{1 + \mathrm{erf}(z)}{2} = 
+// \frac{\mathrm{erfc}(z)}{2}$$
 
 pub fn ndtr(a: f64) -> f64
 {
-    //double x, y, z;
+    //! Normal distribution function
+    //!
+    //! ## DESCRIPTION:
+    //!
+    //! Returns the area under the Gaussian probability density
+    //! function, integrated from minus infinity to x:
+    //!
+    #![doc=include_str!("ndtr.svg")]
+    //!
+    //! where z = x/sqrt(2). Computation is via the functions
+    //! [`cephes64::erf`](crate::cephes64::erf) and [`cephes64::erfc`](crate::cephes64::erfc).
+    //!
+    //! ## ACCURACY:
+    //!
+    //! Relative error:
+    //!
+    //!<table>
+    //! <tr>
+    //!     <th>Arithmetic</th>
+    //!     <th>Domain</th>
+    //!     <th># Trials</th>
+    //!     <th>Peak</th>
+    //!     <th>RMS</th>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>-13,0</td>
+    //!     <td>30000</td>
+    //!     <td>3.4e-14</td>
+    //!     <td>6.7e-15</td>
+    //! </tr>
+    //!</table>
 
     if a.is_nan() {
         //sf_error("ndtr", SF_ERROR_DOMAIN, NULL);
@@ -274,6 +308,53 @@ pub fn erf(x: f64) -> f64 {
     
 
     
+}
+
+#[cfg(test)]
+mod ndtr_tests {
+    use super::*;
+
+    #[test]
+    fn ndtr_trivials() {
+        assert_eq!(ndtr(f64::NAN).is_nan(), true);
+        assert_eq!(ndtr(f64::INFINITY), 1.0);
+        assert_eq!(ndtr(-f64::INFINITY), 0.0);
+    }
+
+    #[test]
+    fn ndtr_small() {
+        assert_eq!(ndtr(0.0), 0.5);
+
+        assert_eq!(ndtr(0.1), 0.539827837277029);
+        assert_eq!(ndtr(0.5), 0.6914624612740131);
+        assert_eq!(ndtr(1.0 - 1e-10), 0.8413447460443458);
+
+        assert_eq!(ndtr(-0.1), 0.460172162722971);
+        assert_eq!(ndtr(-0.5), 0.3085375387259869);
+        assert_eq!(ndtr(-1.0 + 1e-10), 0.15865525395565416);
+    }
+
+    #[test]
+    fn ndtr_large() {
+        assert_eq!(ndtr(1.0), 0.8413447460685429);
+        assert_eq!(ndtr(1.5), 0.9331927987311419);
+        assert_eq!(ndtr(2.0), 0.9772498680518208);
+        assert_eq!(ndtr(3.0), 0.9986501019683699);
+        assert_eq!(ndtr(5.0), 0.9999997133484281);
+        assert_eq!(ndtr(8.0), 0.9999999999999993);
+        assert_eq!(ndtr(10.0), 1.0);
+
+        assert_eq!(ndtr(-1.0), 0.15865525393145707);
+        assert_eq!(ndtr(-1.5), 0.06680720126885807);
+        assert_eq!(ndtr(-2.0), 0.022750131948179195);
+        assert_eq!(ndtr(-3.0), 0.0013498980316300933);
+        assert_eq!(ndtr(-5.0), 2.866515718791933e-07);
+        assert_eq!(ndtr(-8.0), 6.22096057427174e-16);
+        assert_eq!(ndtr(-10.0), 7.61985302416047e-24);
+        assert_eq!(ndtr(-20.0), 2.7536241186061556e-89);
+        assert_eq!(ndtr(-30.0), 4.906713927147908e-198);
+        assert_eq!(ndtr(-40.0), 0.0);
+    }
 }
 
 #[cfg(test)]

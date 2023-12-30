@@ -98,6 +98,33 @@ impl Dawson for f64 {
     }
 }
 
+/// Implementations of Normal (Gaussian) distribution as a trait
+pub trait NormDist {
+    /// Normal probability distribution function
+    fn norm_pdf(&self) -> Self;
+
+    /// Normal cumulative distribution function
+    fn norm_cdf(&self) -> Self;
+
+    /// Inverse of normal cumulative distribution function
+    fn norm_cdf_inv(&self) -> Self;
+}
+
+const SQRT_2PI_RECIP: f64 = 0.3989422804014327;
+impl NormDist for f64 {
+    fn norm_pdf(&self) -> f64 {
+        SQRT_2PI_RECIP * (-0.5 * (*self) * (*self)).exp()
+    }
+    fn norm_cdf(&self) -> f64 {
+        //! Uses [`cephes64::ndtr`](crate::cephes64::ndtr)
+        crate::cephes64::ndtr(*self)
+    }
+    fn norm_cdf_inv(&self) -> f64 {
+        //! Uses [`cephes64::ndtri`](crate::cephes64::ndtri)
+        crate::cephes64::ndtri(*self)
+    }
+}
+
 /// Implementations of gamma functions as a trait
 pub trait Gamma {
     /// Gamma function
