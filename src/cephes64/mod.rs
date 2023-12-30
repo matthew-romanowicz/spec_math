@@ -17,6 +17,8 @@ mod sici;
 pub use crate::cephes64::sici::sici;
 mod ndtr;
 pub use crate::cephes64::ndtr::{ndtr, erfc, erf};
+mod ndtri;
+pub use crate::cephes64::ndtri::ndtri;
 mod gamma;
 //use crate::cephes64::gamma::{lgam_sgn};
 pub use crate::cephes64::gamma::{gamma, lgam};
