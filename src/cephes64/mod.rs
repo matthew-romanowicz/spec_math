@@ -32,6 +32,8 @@ mod beta;
 pub use crate::cephes64::beta::{beta, lbeta};
 mod incbet;
 pub use crate::cephes64::incbet::incbet;
+mod incbi;
+pub use crate::cephes64::incbi::incbi;
 mod zeta;
 pub use crate::cephes64::zeta::zeta;
 mod zetac;
