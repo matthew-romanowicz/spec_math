@@ -139,6 +139,40 @@ impl NormDist for f64 {
     }
 }
 
+/// Implementations of binomial distribution as a trait
+pub trait BinomDist {
+    /// Binomial probability mass function
+    fn binom_pmf(&self, k: f64, n: isize) -> Self;
+
+    /// Binomial cumulative distribution function
+    fn binom_cdf(&self, k: Self, n: isize) -> Self;
+
+    /// Compliment of the binomial cumulative distribution function
+    fn binom_cdfc(&self, k: Self, n: isize) -> Self;
+
+    /// Inverse of the binomial cumulative distribution function
+    fn binom_cdf_inv(&self, k: Self, n: isize) -> Self;
+}
+
+impl BinomDist for f64 {
+    fn binom_pmf(&self, k: f64, n: isize) -> f64 {
+        //! Uses [`misc::binom_pmf`](crate::misc::binom_pmf)
+        crate::misc::binom_pmf(k, n as i32, *self)
+    }
+    fn binom_cdf(&self, k: f64, n: isize) -> f64 {
+        //! Uses [`cephes64::bdtr`](crate::cephes64::bdtr)
+        crate::cephes64::bdtr(k, n, *self)
+    }
+    fn binom_cdfc(&self, k: f64, n: isize) -> f64 {
+        //! Uses [`cephes64::bdtrc`](crate::cephes64::bdtrc)
+        crate::cephes64::bdtrc(k, n, *self)
+    }
+    fn binom_cdf_inv(&self, k: Self, n: isize) -> f64 {
+        //! Uses [`cephes64::bdtri`](crate::cephes64::bdtri)
+        crate::cephes64::bdtri(k, n, *self)
+    }
+}
+
 /// Implementations of gamma functions as a trait
 pub trait Gamma {
     /// Gamma function

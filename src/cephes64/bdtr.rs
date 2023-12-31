@@ -150,8 +150,56 @@ use crate::cephes64::unity::{expm1, log1p};
 use crate::cephes64::incbet::incbet;
 use crate::cephes64::incbi::incbi;
 
-pub fn bdtrc(k: f64, n: isize, p: f64) -> f64
-{
+pub fn bdtrc(k: f64, n: isize, p: f64) -> f64 {
+    //! Complemented binomial distribution
+    //!
+    //! ## DESCRIPTION:
+    //!
+    //! Returns the sum of the terms `k+1` through `n` of the Binomial
+    //! probability density:
+    //!
+    #![doc=include_str!("bdtrc.svg")]
+    //!
+    //! The terms are not summed directly; instead the incomplete
+    //! beta integral is employed, according to the formula
+    //!
+    //! `y = bdtrc( k, n, p ) = incbet( k+1, n-k, p )`
+    //!
+    //! The arguments must be positive, with `p` ranging from `0` to `1`.
+    //!
+    //! ## ACCURACY:
+    //!
+    //! Tested at random points (`a`,`b`,`p`).
+    //!
+    //! Relative error:
+    //!
+    //!<table>
+    //! <tr>
+    //!     <th>Arithmetic</th>
+    //!     <th>a, b Domain</th>
+    //!     <th>p Domain</th>
+    //!     <th># Trials</th>
+    //!     <th>Peak</th>
+    //!     <th>RMS</th>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>0, 100</td>
+    //!     <td>0.001, 1</td>
+    //!     <td>100000</td>
+    //!     <td>6.7e-15</td>
+    //!     <td>8.2e-16</td>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>0, 100</td>
+    //!     <td>0, 0.001</td>
+    //!     <td>100000</td>
+    //!     <td>1.5e-13</td>
+    //!     <td>2.7e-15</td>
+    //! </tr>
+    //!</table>
+
     //double dk, dn;
     let fk = k.floor();
 
@@ -184,10 +232,51 @@ pub fn bdtrc(k: f64, n: isize, p: f64) -> f64
     }
 }
 
-
+// $$\sum_{j=0}^k{\binom{n}{j}\,p^j\,(1-p)^{n-j}}$$
 
 pub fn bdtr(k: f64, n: isize, p: f64) -> f64 {
-    //double dk, dn;
+    //! Binomial distribution
+    //!
+    //! ## DESCRIPTION:
+    //!
+    //! Returns the sum of the terms `0` through `k` of the Binomial
+    //! probability density:
+    //!
+    #![doc=include_str!("bdtr.svg")]
+    //!
+    //! The terms are not summed directly; instead the incomplete
+    //! beta integral is employed, according to the formula
+    //!
+    //! `y = bdtr( k, n, p ) = incbet( n-k, k+1, 1-p )`
+    //!
+    //! The arguments must be positive, with `p` ranging from `0` to `1`.
+    //!
+    //! ## ACCURACY:
+    //!
+    //! Tested at random points (`a`,`b`,`p`), with `p` between `0.001` and `1`.
+    //!
+    //! Relative error:
+    //!
+    //!<table>
+    //! <tr>
+    //!     <th>Arithmetic</th>
+    //!     <th>a, b Domain</th>
+    //!     <th># Trials</th>
+    //!     <th>Peak</th>
+    //!     <th>RMS</th>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>0, 100</td>
+    //!     <td>100000</td>
+    //!     <td>4.3e-15</td>
+    //!     <td>2.6e-16</td>
+    //! </tr>
+    //!</table>
+    //!
+    //! See also [`cephes64::incbet`](crate::cephes64::incbet).
+    
+
     let fk = k.floor();
 
     if p.is_nan() || k.is_nan() {
@@ -214,7 +303,70 @@ pub fn bdtr(k: f64, n: isize, p: f64) -> f64 {
 
 
 pub fn bdtri(k: f64, n: isize, y: f64) -> f64 {
-    //double p, dn, dk;
+    //! Inverse binomial distribution
+    //!
+    //! ## DESCRIPTION:
+    //!
+    //! Finds the event probability `p` such that the sum of the
+    //! terms `0` through `k` of the Binomial probability density
+    //! is equal to the given cumulative probability `y`.
+    //!
+    //! This is accomplished using the inverse beta integral
+    //! function and the relation
+    //!
+    //! `1 - p = incbi( n-k, k+1, y )`
+    //!
+    //! ## ACCURACY:
+    //!
+    //! Tested at random points (`a`,`b`,`p`).
+    //!
+    //! Relative error:
+    //!
+    //!<table>
+    //! <tr>
+    //!     <th>Arithmetic</th>
+    //!     <th>a, b Domain</th>
+    //!     <th>p Domain</th>
+    //!     <th># Trials</th>
+    //!     <th>Peak</th>
+    //!     <th>RMS</th>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>0, 100</td>
+    //!     <td>0.001, 1</td>
+    //!     <td>100000</td>
+    //!     <td>2.3e-14</td>
+    //!     <td>6.4e-16</td>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>0, 10000</td>
+    //!     <td>0.001, 1</td>
+    //!     <td>100000</td>
+    //!     <td>6.6e-12</td>
+    //!     <td>1.2e-13</td>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>0, 100</td>
+    //!     <td>1e-6, 0.001</td>
+    //!     <td>100000</td>
+    //!     <td>2.0e-12</td>
+    //!     <td>1.3e-14</td>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>0, 10000</td>
+    //!     <td>1e-6, 0.001</td>
+    //!     <td>100000</td>
+    //!     <td>1.5e-12</td>
+    //!     <td>3.2e-14</td>
+    //! </tr>
+    //!</table>
+    //!
+    //! See also [`cephes64::incbi`](crate::cephes64::incbi).
+
     let fk = k.floor();
 
     if k.is_nan() {
