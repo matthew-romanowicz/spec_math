@@ -51,6 +51,8 @@ mod igam;
 pub use crate::cephes64::igam::{igam, igamc};
 mod igami;
 pub use crate::cephes64::igami::{igami, igamci};
+mod chdtr;
+pub use crate::cephes64::chdtr::{chdtrc, chdtr, chdtri};
 mod ellpj;
 pub use crate::cephes64::ellpj::ellpj;
 mod ellpk;
