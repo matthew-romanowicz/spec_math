@@ -1,4 +1,4 @@
-use crate::cephes64::{beta, lbeta};
+use crate::cephes64::{beta, lbeta, rgamma, lgam};
 
 const SQRT_2PI_RECIP: f64 = 0.3989422804014327;
 
@@ -33,13 +33,28 @@ pub fn beta_pdf(a: f64, b: f64, x: f64) -> f64 {
     }
 
     let den = beta(a, b);
-    println!("den: {}", den);
     if !den.is_infinite() && den != 0.0 {
         x.powf(a - 1.0) * (1.0 - x).powf(b - 1.0) / den
     } else {
         // Use lbeta to avoid overflow
         let den = lbeta(a, b);
         ((a - 1.0) * x.ln() + (b - 1.0) * (1.0 - x).ln() - den).exp()
+    }
+}
+
+pub fn chi2_pdf(df: f64, x: f64) -> f64 {
+    if x <= 0.0 {
+        if x < 0.0 || (x == 0.0 && df == 1.0) {
+            f64::NAN
+        } else if df == 2.0 {
+            0.5
+        } else {
+            0.0
+        }
+    } else if df <= 300.0 { // rgamma will start returning 0 after this value
+        (0.5 * x).powf(0.5 * df) * rgamma(0.5 * df) * (-0.5 * x).exp() / x
+    } else {
+        (0.5 * df * (0.5 * x).ln() - 0.5 * x - x.ln() - lgam(0.5 * df)).exp()
     }
 }
 
@@ -119,5 +134,29 @@ mod beta_pdf_tests {
         assert_eq!(beta_pdf(150.0, 155.0, 0.5), 13.362132026865142);
         assert_eq!(beta_pdf(1500.0, 10000.0, 0.1), 3.293893418465068e-22);
         assert_eq!(beta_pdf(1500.5, 10000.0, 0.1), 2.884325727129547e-22);
+    }
+}
+
+#[cfg(test)]
+mod chi2_pdf_tests {
+    use super::*;
+
+    #[test]
+    fn chi2_pdf_trivials() {
+        assert_eq!(chi2_pdf(5.0, -1e-20).is_nan(), true);
+        assert_eq!(chi2_pdf(1.0, 0.0).is_nan(), true);
+        assert_eq!(chi2_pdf(2.0, 0.0), 0.5);
+        assert_eq!(chi2_pdf(3.0, 0.0), 0.0);
+    }
+
+    #[test]
+    fn chi2_pdf_values() {
+        assert_eq!(chi2_pdf(0.1, 2.0), 0.009447299158950628);
+        assert_eq!(chi2_pdf(1.0, 2.0), 0.10377687435514868);
+        assert_eq!(chi2_pdf(100.0, 2.0), 3.023922484977498e-64);
+
+        // TODO: Check to see how accurate these are
+        assert_eq!(chi2_pdf(1e5, 1e5), 0.0008920605712562789);
+        assert_eq!(chi2_pdf(1e10, 1e10), 2.82093439313804e-6);
     }
 }

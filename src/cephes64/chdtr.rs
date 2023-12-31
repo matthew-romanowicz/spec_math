@@ -162,12 +162,12 @@ pub fn chdtrc(df: f64, x: f64) -> f64 {
     //!
     #![doc=include_str!("chdtrc.svg")]
     //!
-    //! where x is the Chi-square variable.
+    //! where `x` is the Chi-square variable.
     //!
     //! The incomplete Gamma integral is used, according to the
     //! formula
     //!
-    //! y = chdtr( v, x ) = igamc( v/2.0, x/2.0 ).
+    //! `y = chdtr( v, x ) = igamc( v/2.0, x/2.0 )`
     //!
     //! The arguments must both be positive.
     //!
@@ -224,9 +224,9 @@ pub fn chdtri(df: f64, y: f64) -> f64 {
     //!
     //! ## DESCRIPTION:
     //!
-    //! Finds the Chi-square argument x such that the integral
-    //! from x to infinity of the Chi-square density is equal
-    //! to the given cumulative probability y.
+    //! Finds the Chi-square argument `x` such that the integral
+    //! from `x` to infinity of the Chi-square density is equal
+    //! to the given cumulative probability `y`.
     //!
     //! This is accomplished using the inverse Gamma integral
     //! function and the relation

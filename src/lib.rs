@@ -300,6 +300,40 @@ impl BetaDist for f64 {
     }
 }
 
+/// Implementations of Chi squared distribution as a trait
+pub trait Chi2Dist {
+    /// Chi squared probability density function
+    fn chi2_pdf(&self, df: Self) -> Self;
+
+    /// Chi squared cumulative distribution function
+    fn chi2_cdf(&self, df: Self) -> Self;
+
+    /// Compliment of the chi squared cumulative distribution function
+    fn chi2_cdfc(&self, df: Self) -> Self;
+
+    /// Inverse of the chi squared cumulative distribution function
+    fn chi2_cdf_inv(&self, df: Self) -> Self;
+}
+
+impl Chi2Dist for f64 {
+    fn chi2_pdf(&self, df: f64) -> f64 {
+        //! Uses [`misc::chi2_pdf`](crate::misc::chi2_pdf)
+        crate::misc::chi2_pdf(df, *self)
+    }
+    fn chi2_cdf(&self, df: f64) -> f64 {
+        //! Uses [`cephes64::chdtr`](crate::cephes64::chdtr)
+        crate::cephes64::chdtr(df, *self)
+    }
+    fn chi2_cdfc(&self, df: f64) -> f64 {
+        //! Uses [`cephes64::chdtrc`](crate::cephes64::chdtrc)
+        crate::cephes64::chdtrc(df, *self)
+    }
+    fn chi2_cdf_inv(&self, df: f64) -> f64 {
+        //! Uses [`cephes64::chdtri`](crate::cephes64::chdtri) 
+        crate::cephes64::chdtri(df, *self)
+    }
+}
+
 /// Implementations of zeta functions as a trait
 pub trait Zeta {
     /// Riemann zeta function
