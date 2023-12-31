@@ -9,7 +9,7 @@ pub fn norm_pdf(x: f64) -> f64 {
 
 pub fn binom_pmf(k: f64, n: i32, p: f64) -> f64 {
     //! Binomial probability mass function
-    
+
     if !(0.0..=1.0).contains(&p) {
         return f64::NAN;
     }
@@ -22,6 +22,24 @@ pub fn binom_pmf(k: f64, n: i32, p: f64) -> f64 {
         // Use lbeta to avoid overflow
         let c = (n as f64).ln() - kf.ln() - (n as f64 - kf).ln() - lbeta(kf, n as f64 - kf);
         (c + kf * p.ln() + (n as f64 - kf) * (1.0 - p).ln()).exp()
+    }
+}
+
+pub fn beta_pdf(a: f64, b: f64, x: f64) -> f64 {
+    //! Beta probability density function
+
+    if !(0.0..=1.0).contains(&x) {
+        return f64::NAN;
+    }
+
+    let den = beta(a, b);
+    println!("den: {}", den);
+    if !den.is_infinite() && den != 0.0 {
+        x.powf(a - 1.0) * (1.0 - x).powf(b - 1.0) / den
+    } else {
+        // Use lbeta to avoid overflow
+        let den = lbeta(a, b);
+        ((a - 1.0) * x.ln() + (b - 1.0) * (1.0 - x).ln() - den).exp()
     }
 }
 
@@ -65,7 +83,7 @@ mod binom_pmf_tests {
     use super::*;
 
     #[test]
-    fn bindom_pmf_trivials() {
+    fn binom_pmf_trivials() {
         assert_eq!(binom_pmf(10.0, 15, 0.0), 0.0);
         assert_eq!(binom_pmf(10.0, 15, 1.0), 0.0);
         assert_eq!(binom_pmf(10.0, 15, -1e-10).is_nan(), true);
@@ -73,11 +91,33 @@ mod binom_pmf_tests {
     }
 
     #[test]
-    fn bindom_pmf_values() {
+    fn binom_pmf_values() {
         assert_eq!(binom_pmf(3.0, 5, 0.5), 0.3125);
         assert_eq!(binom_pmf(3.5, 5, 0.5), 0.3125);
         assert_eq!(binom_pmf(150.0, 155, 0.5), 1.5294448135427591e-38);
         assert_eq!(binom_pmf(1500.0, 10000, 0.1), 8.160246663190426e-56);
         assert_eq!(binom_pmf(1500.5, 10000, 0.1), 8.160246663190426e-56);
+    }
+}
+
+#[cfg(test)]
+mod beta_pdf_tests {
+    use super::*;
+
+    #[test]
+    fn beta_pdf_trivials() {
+        assert_eq!(beta_pdf(10.0, 15.0, 0.0), 0.0);
+        assert_eq!(beta_pdf(10.0, 15.0, 1.0), 0.0);
+        assert_eq!(beta_pdf(10.0, 15.0, -1e-10).is_nan(), true);
+        assert_eq!(beta_pdf(10.0, 15.0, 1.0 + 1e-10).is_nan(), true);
+    }
+
+    #[test]
+    fn beta_pdf_values() {
+        assert_eq!(beta_pdf(3.0, 5.0, 0.5), 1.6406249999999998);
+        assert_eq!(beta_pdf(3.5, 5.0, 0.5), 1.9440689061613787);
+        assert_eq!(beta_pdf(150.0, 155.0, 0.5), 13.362132026865142);
+        assert_eq!(beta_pdf(1500.0, 10000.0, 0.1), 3.293893418465068e-22);
+        assert_eq!(beta_pdf(1500.5, 10000.0, 0.1), 2.884325727129547e-22);
     }
 }

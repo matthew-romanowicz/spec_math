@@ -34,6 +34,8 @@ mod incbet;
 pub use crate::cephes64::incbet::incbet;
 mod incbi;
 pub use crate::cephes64::incbi::incbi;
+mod btdtr;
+pub use crate::cephes64::btdtr::btdtr;
 mod bdtr;
 pub use crate::cephes64::bdtr::{bdtrc, bdtr, bdtri};
 mod zeta;

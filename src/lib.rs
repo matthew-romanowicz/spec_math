@@ -273,6 +273,33 @@ impl Beta for f64 {
     }
 }
 
+/// Implementations of beta distribution as a trait
+pub trait BetaDist {
+    /// Beta probability density function
+    fn beta_pdf(&self, a: Self, b: Self) -> Self;
+
+    /// Beta cumulative distribution function
+    fn beta_cdf(&self, a: Self, b: Self) -> Self;
+
+    /// Inverse of the beta cumulative distribution function
+    fn beta_cdf_inv(&self, a: Self, b: Self) -> Self;
+}
+
+impl BetaDist for f64 {
+    fn beta_pdf(&self, a: f64, b: f64) -> f64 {
+        //! Uses [`misc::beta_pdf`](crate::misc::beta_pdf)
+        crate::misc::beta_pdf(a, b, *self)
+    }
+    fn beta_cdf(&self, a: f64, b: f64) -> f64 {
+        //! Uses [`cephes64::btdtr`](crate::cephes64::btdtr)
+        crate::cephes64::btdtr(a,b, *self)
+    }
+    fn beta_cdf_inv(&self, a: f64, b: f64) -> f64 {
+        //! Uses [`cephes64::incbi`](crate::cephes64::incbi) 
+        crate::cephes64::incbi(a, b, *self)
+    }
+}
+
 /// Implementations of zeta functions as a trait
 pub trait Zeta {
     /// Riemann zeta function
