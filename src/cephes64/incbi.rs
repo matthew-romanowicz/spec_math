@@ -1,44 +1,3 @@
-/*                                                     incbi()
-*
-*      Inverse of incomplete beta integral
-*
-*
-*
-* SYNOPSIS:
-*
-* double a, b, x, y, incbi();
-*
-* x = incbi( a, b, y );
-*
-*
-*
-* DESCRIPTION:
-*
-* Given y, the function finds x such that
-*
-*  incbet( a, b, x ) = y .
-*
-* The routine performs interval halving or Newton iterations to find the
-* root of incbet(a,b,x) - y = 0.
-*
-*
-* ACCURACY:
-*
-*                      Relative error:
-*                x     a,b
-* arithmetic   domain  domain  # trials    peak       rms
-*    IEEE      0,1    .5,10000   50000    5.8e-12   1.3e-13
-*    IEEE      0,1   .25,100    100000    1.8e-13   3.9e-15
-*    IEEE      0,1     0,5       50000    1.1e-12   5.5e-15
-*    VAX       0,1    .5,100     25000    3.5e-14   1.1e-15
-* With a and b constrained to half-integer or integer values:
-*    IEEE      0,1    .5,10000   50000    5.8e-12   1.1e-13
-*    IEEE      0,1    .5,100    100000    1.7e-14   7.9e-16
-* With a = .5, b constrained to half-integer or integer values:
-*    IEEE      0,1    .5,10000   10000    8.3e-11   1.0e-11
-*/
-
-
 /*
 * Cephes Math Library Release 2.4:  March,1996
 * Copyright 1984, 1996 by Stephen L. Moshier
@@ -49,10 +8,114 @@ use crate::cephes64::ndtri::ndtri;
 use crate::cephes64::gamma::lgam;
 use crate::cephes64::incbet::incbet;
 
-pub fn incbi(aa: f64, bb: f64, yy0: f64) -> f64
-{
-    // double a, b, y0, d, y, x, x0, x1, lgm, yp, di, dithresh, yl, yh, xt;
-    // int i, rflg, dir, nflg;
+pub fn incbi(aa: f64, bb: f64, yy0: f64) -> f64 {
+    //! Inverse of incomplete beta integral
+    //! 
+    //! ## DESCRIPTION:
+    //!
+    //! Given `y`, the function finds `x` such that
+    //!
+    //! `incbet( a, b, x ) = y` .
+    //!
+    //! The routine performs interval halving or Newton iterations to find the
+    //! root of `incbet(a,b,x) - y = 0`.
+    //!
+    //! ## ACCURACY:
+    //!
+    //! Relative error:
+    //!
+    //!<table>
+    //! <tr>
+    //!     <th>Arithmetic</th>
+    //!     <th>x Domain</th>
+    //!     <th>a, b Domain</th>
+    //!     <th># Trials</th>
+    //!     <th>Peak</th>
+    //!     <th>RMS</th>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>0, 1</td>
+    //!     <td>.5, 10000</td>
+    //!     <td>50000</td>
+    //!     <td>5.8e-12</td>
+    //!     <td>1.3e-13</td>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>0, 1</td>
+    //!     <td>.25, 100</td>
+    //!     <td>100000</td>
+    //!     <td>1.8e-13</td>
+    //!     <td>3.9e-15</td>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>0, 1</td>
+    //!     <td>0, 5</td>
+    //!     <td>50000</td>
+    //!     <td>1.1e-12</td>
+    //!     <td>5.5e-15</td>
+    //! </tr>
+    //! <tr>
+    //!     <td>VAX</td>
+    //!     <td>0, 1</td>
+    //!     <td>.5, 100</td>
+    //!     <td>25000</td>
+    //!     <td>3.5e-14</td>
+    //!     <td>1.1e-15</td>
+    //! </tr>
+    //!</table>
+    //!
+    //! With `a` and `b` constrained to half-integer or integer values:
+    //!
+    //!<table>
+    //! <tr>
+    //!     <th>Arithmetic</th>
+    //!     <th>x Domain</th>
+    //!     <th>a, b Domain</th>
+    //!     <th># Trials</th>
+    //!     <th>Peak</th>
+    //!     <th>RMS</th>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>0, 1</td>
+    //!     <td>.5, 10000</td>
+    //!     <td>50000</td>
+    //!     <td>5.8e-12</td>
+    //!     <td>1.1e-13</td>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>0, 1</td>
+    //!     <td>.5, 100</td>
+    //!     <td>100000</td>
+    //!     <td>1.7e-14</td>
+    //!     <td>7.9e-16</td>
+    //! </tr>
+    //!</table>
+    //!
+    //! With `a = .5`, `b` constrained to half-integer or integer values:
+    //! 
+    //!<table>
+    //! <tr>
+    //!     <th>Arithmetic</th>
+    //!     <th>x Domain</th>
+    //!     <th>a, b Domain</th>
+    //!     <th># Trials</th>
+    //!     <th>Peak</th>
+    //!     <th>RMS</th>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>0, 1</td>
+    //!     <td>.5, 10000</td>
+    //!     <td>10000</td>
+    //!     <td>8.3e-11</td>
+    //!     <td>1.0e-11</td>
+    //! </tr>
+    //!</table>
 
 
     //let i: isize = 0;
@@ -117,11 +180,12 @@ pub fn incbi(aa: f64, bb: f64, yy0: f64) -> f64
         d = yp * (x + lgm).sqrt() / x
             - (1.0 / (2.0 * b - 1.0) - 1.0 / (2.0 * a - 1.0))
             * (lgm + 5.0 / 6.0 - 2.0 / (3.0 * x));
-        d = 2.0 * d;
-        if d < MINLOG {
-            // TODO: Find a test for this case
+        d *= 2.0;
 
-            x = 1.0;
+        if d < MINLOG {
+            // TODO: This case may be impossible to reach
+
+            //x = 1.0;
             //goto under;
             //sf_error("incbi", SF_ERROR_UNDERFLOW, NULL);
             x = 0.0;
@@ -223,9 +287,9 @@ pub fn incbi(aa: f64, bb: f64, yy0: f64) -> f64
                         dir = 0;
                         di = 0.5;
                     } else if dir < -3 {
-                        di = di * di;
+                        di *= di;
                     } else if dir < -1 {
-                        di = 0.5 * di;
+                        di *= 0.5;
                     } else {
                         di = (y - y0) / (yh - yl);
                     }
@@ -375,6 +439,7 @@ mod incbi_tests {
         assert_eq!(incbi(1e-50, 1e50, 1e-15), 0.0);
         assert_eq!(incbi(0.5, 1e50, 0.5), 2.2746821155978688e-51);
         assert_eq!(incbi(1e50, 1e50, 1.0 - 1e-10), 0.499999999975);
+        assert_eq!(incbi(1e64, 1e65, 0.5), 0.09090909090909172);
         // for i in 1..1000 {
         //     for j in 1..1000 {
         //         for k in 1..1000 {

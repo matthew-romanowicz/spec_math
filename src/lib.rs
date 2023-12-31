@@ -209,8 +209,13 @@ pub trait Beta {
     /// Natural logarithm of the absolute value of the beta function
     fn lbeta(&self, other: Self) -> Self;
 
-    /// Incomplete beta function
-    fn ibeta(&self, other: Self, x: Self) -> Self;
+    /// Regularized incomplete beta function
+    fn ibeta(&self, a: Self, b: Self) -> Self;
+
+    /// Inverse of the regularized incomplete beta function
+    ///
+    /// Finds `x` such that self is equal to `x.ibeta(a, b)`
+    fn ibeta_inv(&self, a: Self, b: Self) -> Self;
 }
 
 impl Beta for f64 {
@@ -223,9 +228,14 @@ impl Beta for f64 {
         crate::cephes64::lbeta(*self, other)
     }
 
-    fn ibeta(&self, other: f64, x: f64) -> f64 {
+    fn ibeta(&self, a: f64, b: f64) -> f64 {
         //! Uses [`cephes64::incbet`](crate::cephes64::incbet) 
-        crate::cephes64::incbet(*self, other, x)
+        crate::cephes64::incbet(a, b, *self)
+    }
+
+    fn ibeta_inv(&self, a: f64, b: f64) -> f64 {
+        //! Uses [`cephes64::incbi`](crate::cephes64::incbi) 
+        crate::cephes64::incbi(a, b, *self)
     }
 }
 
