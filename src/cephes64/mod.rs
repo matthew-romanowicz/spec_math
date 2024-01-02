@@ -38,6 +38,8 @@ mod btdtr;
 pub use crate::cephes64::btdtr::btdtr;
 mod bdtr;
 pub use crate::cephes64::bdtr::{bdtrc, bdtr, bdtri};
+mod fdtr;
+pub use crate::cephes64::fdtr::{fdtrc, fdtr, fdtri};
 mod zeta;
 pub use crate::cephes64::zeta::zeta;
 mod zetac;
