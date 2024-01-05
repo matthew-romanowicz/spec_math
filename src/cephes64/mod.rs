@@ -13,6 +13,8 @@ mod polevl;
 pub use crate::cephes64::polevl::{polevl, p1evl};
 mod dawsn;
 pub use crate::cephes64::dawsn::dawsn;
+mod spence;
+pub use crate::cephes64::spence::spence;
 mod fresnl;
 pub use crate::cephes64::fresnl::fresnl;
 mod sici;

@@ -131,6 +131,19 @@ impl Dawson for f64 {
     }
 }
 
+/// Implementations of polylogarithms as a trait
+pub trait Polylog {
+    /// Dilogarithm integral
+    fn li2(&self) -> Self;
+}
+
+impl Polylog for f64 {
+    fn li2(&self) -> f64 {
+        //! Uses [`cephes64::spence`](crate::cephes64::spence)
+        crate::cephes64::spence(*self)
+    }
+}
+
 /// Implementations of Normal (Gaussian) distribution as a trait
 pub trait NormDist {
     /// Normal probability density function
