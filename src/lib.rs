@@ -334,6 +334,40 @@ impl Chi2Dist for f64 {
     }
 }
 
+/// Implementations of f distribution as a trait
+pub trait FDist {
+    /// F probability density function
+    fn f_pdf(&self, a: Self, b: Self) -> Self;
+
+    /// F cumulative distribution function
+    fn f_cdf(&self, a: Self, b: Self) -> Self;
+
+    /// Compliment of the f cumulative distribution function
+    fn f_cdfc(&self, a: Self, b: Self) -> Self;
+
+    /// Inverse of the f cumulative distribution function
+    fn f_cdf_inv(&self, a: Self, b: Self) -> Self;
+}
+
+impl FDist for f64 {
+    fn f_pdf(&self, a: f64, b: f64) -> f64 {
+        //! Uses [`misc::f_pdf`](crate::misc::f_pdf)
+        crate::misc::f_pdf(a, b, *self)
+    }
+    fn f_cdf(&self, a: f64, b: f64) -> f64 {
+        //! Uses [`cephes64::fdtr`](crate::cephes64::fdtr)
+        crate::cephes64::fdtr(a,b, *self)
+    }
+    fn f_cdfc(&self, a: f64, b: f64) -> f64 {
+        //! Uses [`cephes64::fdtrc`](crate::cephes64::fdtrc)
+        crate::cephes64::fdtrc(a,b, *self)
+    }
+    fn f_cdf_inv(&self, a: f64, b: f64) -> f64 {
+        //! Uses [`cephes64::fdtri`](crate::cephes64::fdtri) 
+        crate::cephes64::fdtri(a, b, *self)
+    }
+}
+
 /// Implementations of zeta functions as a trait
 pub trait Zeta {
     /// Riemann zeta function

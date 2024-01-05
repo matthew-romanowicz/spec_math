@@ -58,6 +58,20 @@ pub fn chi2_pdf(df: f64, x: f64) -> f64 {
     }
 }
 
+pub fn f_pdf(d1: f64, d2: f64, x: f64) -> f64 {
+    if x <= 0.0 {
+        if x < 0.0 || (x == 0.0 && d1 == 1.0) {
+            f64::NAN
+        } else {
+            0.0
+        }
+    } else {
+        let log_pdf = d1 * 0.5 * (d1).ln() + d2 * 0.5 * d2.ln() + (d1 * 0.5 - 1.0)*x.ln() - 
+        ((d1 + d2) * 0.5 * (d1 * x + d2).ln() + lbeta(0.5 * d1, 0.5 * d2));
+        log_pdf.exp()
+    }
+}
+
 #[cfg(test)]
 mod norm_pdf_tests {
     use super::*;
@@ -158,5 +172,23 @@ mod chi2_pdf_tests {
         // TODO: Check to see how accurate these are
         assert_eq!(chi2_pdf(1e5, 1e5), 0.0008920605712562789);
         assert_eq!(chi2_pdf(1e10, 1e10), 2.82093439313804e-6);
+    }
+}
+
+#[cfg(test)]
+mod f_pdf_tests {
+    use super::*;
+
+    #[test]
+    fn f_pdf_trivials() {
+        assert_eq!(f_pdf(1.0, 1.0, 0.0).is_nan(), true);
+        assert_eq!(f_pdf(2.0, 1.0, -1e-10).is_nan(), true);
+        assert_eq!(f_pdf(2.0, 1.0, 0.0), 0.0);
+    }
+
+    #[test]
+    fn f_pdf_values() {
+        assert_eq!(f_pdf(2.0, 2.0, 2.0), 0.11111111111111115);
+        assert_eq!(f_pdf(1e10, 1e-5, 1e10), 4.999187035248361e-16);
     }
 }
