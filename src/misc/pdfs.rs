@@ -43,6 +43,8 @@ pub fn beta_pdf(a: f64, b: f64, x: f64) -> f64 {
 }
 
 pub fn chi2_pdf(df: f64, x: f64) -> f64 {
+    //! Chi-squared probability density function
+
     if x <= 0.0 {
         if x < 0.0 || (x == 0.0 && df == 1.0) {
             f64::NAN
@@ -59,6 +61,8 @@ pub fn chi2_pdf(df: f64, x: f64) -> f64 {
 }
 
 pub fn f_pdf(d1: f64, d2: f64, x: f64) -> f64 {
+    //! F distribution probability density function
+
     if x <= 0.0 {
         if x < 0.0 || (x == 0.0 && d1 == 1.0) {
             f64::NAN
