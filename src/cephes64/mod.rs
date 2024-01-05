@@ -17,6 +17,8 @@ mod fresnl;
 pub use crate::cephes64::fresnl::fresnl;
 mod sici;
 pub use crate::cephes64::sici::sici;
+mod shichi;
+pub use crate::cephes64::shichi::shichi;
 mod ndtr;
 pub use crate::cephes64::ndtr::{ndtr, erfc, erf};
 mod ndtri;

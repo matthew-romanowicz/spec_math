@@ -37,6 +37,11 @@ pub struct SiCiOutput<T> {
     pub ci: T
 }
 
+pub struct ShiChiOutput<T> {
+    pub shi: T,
+    pub chi: T
+}
+
 /// Implementations of error functions as a trait
 pub trait Erf {
     /// Error function
@@ -87,7 +92,7 @@ impl Fresnel for f64 {
 
 /// Implementations of sine and cosine integrals as a trait
 pub trait SiCi: Sized {
-    /// Fresnel integrals
+    /// Sine and cosine integrals
     fn sici(&self) -> SiCiOutput<Self>;
 }
 
@@ -96,6 +101,20 @@ impl SiCi for f64 {
         //! Uses [`cephes64::sici`](crate::cephes64::sici)
         let res = crate::cephes64::sici(*self);
         SiCiOutput::<f64> {si: res.0, ci: res.1}
+    }
+}
+
+/// Implementations of hyperbolic sine and cosine integrals as a trait
+pub trait ShiChi: Sized {
+    /// Hyperbolic sine and cosine integrals
+    fn shichi(&self) -> ShiChiOutput<Self>;
+}
+
+impl ShiChi for f64 {
+    fn shichi(&self) -> ShiChiOutput<f64> {
+        //! Uses [`cephes64::shichi`](crate::cephes64::shichi)
+        let res = crate::cephes64::shichi(*self);
+        ShiChiOutput::<f64> {shi: res.0, chi: res.1}
     }
 }
 
