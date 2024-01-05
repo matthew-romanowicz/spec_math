@@ -1,47 +1,3 @@
-/*                                                     spence.c
-*
-*     Dilogarithm
-*
-*
-*
-* SYNOPSIS:
-*
-* double x, y, spence();
-*
-* y = spence( x );
-*
-*
-*
-* DESCRIPTION:
-*
-* Computes the integral
-*
-*                    x
-*                    -
-*                   | | log t
-* spence(x)  =  -   |   ----- dt
-*                 | |   t - 1
-*                  -
-*                  1
-*
-* for x >= 0.  A rational approximation gives the integral in
-* the interval (0.5, 1.5).  Transformation formulas for 1/x
-* and 1-x are employed outside the basic expansion range.
-*
-*
-*
-* ACCURACY:
-*
-*                      Relative error:
-* arithmetic   domain     # trials      peak         rms
-*    IEEE      0,4         30000       3.9e-15     5.4e-16
-*
-*
-*/
-
-/*                                                     spence.c */
-
-
 /*
 * Cephes Math Library Release 2.1:  January, 1989
 * Copyright 1985, 1987, 1989 by Stephen L. Moshier
