@@ -76,6 +76,19 @@ pub fn f_pdf(d1: f64, d2: f64, x: f64) -> f64 {
     }
 }
 
+pub fn gamma_pdf(a: f64, b: f64, x: f64) -> f64 {
+    //! Gamma distribution probability density function
+
+    // TODO: Add tests for this
+
+    if x <= 0.0 {
+        f64::NAN
+    } else {
+        let log_pdf = b * a.ln() + (b - 1.0) * x.ln() - a * x - lgam(b);
+        log_pdf.exp()
+    }
+}
+
 #[cfg(test)]
 mod norm_pdf_tests {
     use super::*;
@@ -196,3 +209,21 @@ mod f_pdf_tests {
         assert_eq!(f_pdf(1e10, 1e-5, 1e10), 4.999187035248361e-16);
     }
 }
+
+// #[cfg(test)]
+// mod gamma_pdf_tests {
+//     use super::*;
+
+//     #[test]
+//     fn gamma_pdf_trivials() {
+//         assert_eq!(gamma_pdf(1.0, 1.0, 0.0).is_nan(), true);
+//         assert_eq!(gamma_pdf(2.0, 1.0, -1e-10).is_nan(), true);
+//         assert_eq!(gamma_pdf(2.0, 1.0, 0.0), 0.0);
+//     }
+
+//     #[test]
+//     fn gamma_pdf_values() {
+//         assert_eq!(gamma_pdf(2.0, 2.0, 2.0), 0.29305022221974686);
+//         //assert_eq!(gamma_pdf(1e-5, 1e10, 1e10), 4.999187035248361e-16);
+//     }
+// }

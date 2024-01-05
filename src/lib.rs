@@ -387,6 +387,40 @@ impl FDist for f64 {
     }
 }
 
+/// Implementations of gamma distribution as a trait
+pub trait GammaDist {
+    /// Gamma probability density function
+    fn gamma_pdf(&self, a: Self, b: Self) -> Self;
+
+    /// Gamma cumulative distribution function
+    fn gamma_cdf(&self, a: Self, b: Self) -> Self;
+
+    /// Compliment of the gamma cumulative distribution function
+    fn gamma_cdfc(&self, a: Self, b: Self) -> Self;
+
+    /// Inverse of the gamma cumulative distribution function
+    fn gamma_cdf_inv(&self, a: Self, b: Self) -> Self;
+}
+
+impl GammaDist for f64 {
+    fn gamma_pdf(&self, a: f64, b: f64) -> f64 {
+        //! Uses [`misc::gamma_pdf`](crate::misc::gamma_pdf)
+        crate::misc::gamma_pdf(a, b, *self)
+    }
+    fn gamma_cdf(&self, a: f64, b: f64) -> f64 {
+        //! Uses [`cephes64::gdtr`](crate::cephes64::gdtr)
+        crate::cephes64::gdtr(a,b, *self)
+    }
+    fn gamma_cdfc(&self, a: f64, b: f64) -> f64 {
+        //! Uses [`cephes64::gdtrc`](crate::cephes64::gdtrc)
+        crate::cephes64::gdtrc(a,b, *self)
+    }
+    fn gamma_cdf_inv(&self, a: f64, b: f64) -> f64 {
+        //! Uses [`cephes64::gdtri`](crate::cephes64::gdtri) 
+        crate::cephes64::gdtri(a, b, *self)
+    }
+}
+
 /// Implementations of zeta functions as a trait
 pub trait Zeta {
     /// Riemann zeta function
