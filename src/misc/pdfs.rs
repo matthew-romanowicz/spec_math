@@ -25,6 +25,21 @@ pub fn binom_pmf(k: f64, n: i32, p: f64) -> f64 {
     }
 }
 
+pub fn nbinom_pmf(k: i32, n: i32, p: f64) -> f64 {
+    //! Negative binomial probability mass function
+
+    if !(0.0..=1.0).contains(&p) {
+        return f64::NAN;
+    }
+
+    // (k + (n - 1)) * (1 - p)^k * p^n / (k*(n - 1)*beta(k, n - 1))
+
+    let log_pmf = ((k + n - 1) as f64).ln() + k as f64 * (1.0 - p).ln() + n as f64 * p.ln() 
+        - (k as f64 * (n as f64 - 1.0)).ln() - lbeta(k as f64, n as f64 - 1.0);
+
+    log_pmf.exp()
+}
+
 pub fn beta_pdf(a: f64, b: f64, x: f64) -> f64 {
     //! Beta probability density function
 
@@ -143,6 +158,26 @@ mod binom_pmf_tests {
         assert_eq!(binom_pmf(150.0, 155, 0.5), 1.5294448135427591e-38);
         assert_eq!(binom_pmf(1500.0, 10000, 0.1), 8.160246663190426e-56);
         assert_eq!(binom_pmf(1500.5, 10000, 0.1), 8.160246663190426e-56);
+    }
+}
+
+#[cfg(test)]
+mod nbinom_pmf_tests {
+    use super::*;
+
+    #[test]
+    fn nbinom_pmf_trivials() {
+        assert_eq!(nbinom_pmf(10, 15, 0.0), 0.0);
+        assert_eq!(nbinom_pmf(10, 15, 1.0), 0.0);
+        assert_eq!(nbinom_pmf(10, 15, -1e-10).is_nan(), true);
+        assert_eq!(nbinom_pmf(10, 15, 1.0 + 1e-10).is_nan(), true);
+    }
+
+    #[test]
+    fn nbinom_pmf_values() {
+        assert_eq!(nbinom_pmf(3, 5, 0.5), 0.13671874999999994);
+        assert_eq!(nbinom_pmf(150, 155, 0.5), 0.022270220044768158);
+        assert_eq!(nbinom_pmf(150, 100, 0.01), 5.370670528582223e-130);
     }
 }
 

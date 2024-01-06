@@ -205,6 +205,40 @@ impl BinomDist for f64 {
     }
 }
 
+/// Implementations of negative binomial distribution as a trait
+pub trait NBinomDist {
+    /// Negative binomial probability mass function
+    fn nbinom_pmf(&self, k: isize, n: isize) -> Self;
+
+    /// Negative binomial cumulative distribution function
+    fn nbinom_cdf(&self, k: isize, n: isize) -> Self;
+
+    /// Compliment of the negative binomial cumulative distribution function
+    fn nbinom_cdfc(&self, k: isize, n: isize) -> Self;
+
+    /// Inverse of the negative binomial cumulative distribution function
+    fn nbinom_cdf_inv(&self, k: isize, n: isize) -> Self;
+}
+
+impl NBinomDist for f64 {
+    fn nbinom_pmf(&self, k: isize, n: isize) -> f64 {
+        //! Uses [`misc::nbinom_pmf`](crate::misc::nbinom_pmf)
+        crate::misc::nbinom_pmf(k as i32, n as i32, *self)
+    }
+    fn nbinom_cdf(&self, k: isize, n: isize) -> f64 {
+        //! Uses [`cephes64::nbdtr`](crate::cephes64::nbdtr)
+        crate::cephes64::nbdtr(k, n, *self)
+    }
+    fn nbinom_cdfc(&self, k: isize, n: isize) -> f64 {
+        //! Uses [`cephes64::nbdtrc`](crate::cephes64::nbdtrc)
+        crate::cephes64::nbdtrc(k, n, *self)
+    }
+    fn nbinom_cdf_inv(&self, k: isize, n: isize) -> f64 {
+        //! Uses [`cephes64::nbdtri`](crate::cephes64::nbdtri)
+        crate::cephes64::nbdtri(k, n, *self)
+    }
+}
+
 /// Implementations of gamma functions as a trait
 pub trait Gamma {
     /// Gamma function
