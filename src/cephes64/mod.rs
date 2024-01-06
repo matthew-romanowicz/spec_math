@@ -65,6 +65,8 @@ mod chdtr;
 pub use crate::cephes64::chdtr::{chdtrc, chdtr, chdtri};
 mod gdtr;
 pub use crate::cephes64::gdtr::{gdtrc, gdtr, gdtri};
+mod pdtr;
+pub use crate::cephes64::pdtr::{pdtrc, pdtr, pdtri};
 mod ellpj;
 pub use crate::cephes64::ellpj::ellpj;
 mod ellpk;

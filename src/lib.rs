@@ -542,6 +542,40 @@ impl Chi2Dist for f64 {
     }
 }
 
+/// Implementations of the Poisson distribution as a trait
+pub trait PoissonDist {
+    /// Poisson probability mass function
+    fn pois_pmf(&self, k: i32) -> Self;
+
+    /// Poisson cumulative distribution function
+    fn pois_cdf(&self, k: Self) -> Self;
+
+    /// Compliment of the Poisson cumulative distribution function
+    fn pois_cdfc(&self, k: Self) -> Self;
+
+    /// Inverse of the Poisson cumulative distribution function
+    fn pois_cdf_inv(&self, k: isize) -> Self;
+}
+
+impl PoissonDist for f64 {
+    fn pois_pmf(&self, k: i32) -> f64 {
+        //! Uses [`misc::pois_pmf`](crate::misc::pois_pmf)
+        crate::misc::pois_pmf(k, *self)
+    }
+    fn pois_cdf(&self, k: f64) -> f64 {
+        //! Uses [`cephes64::pdtr`](crate::cephes64::pdtr)
+        crate::cephes64::pdtr(k, *self)
+    }
+    fn pois_cdfc(&self, k: f64) -> f64 {
+        //! Uses [`cephes64::pdtrc`](crate::cephes64::pdtrc)
+        crate::cephes64::pdtrc(k, *self)
+    }
+    fn pois_cdf_inv(&self, k: isize) -> f64 {
+        //! Uses [`cephes64::pdtri`](crate::cephes64::pdtri) 
+        crate::cephes64::pdtri(k, *self)
+    }
+}
+
 /// Implementations of f distribution as a trait
 pub trait FDist {
     /// F probability density function

@@ -40,6 +40,20 @@ pub fn nbinom_pmf(k: i32, n: i32, p: f64) -> f64 {
     log_pmf.exp()
 }
 
+pub fn pois_pmf(k: i32, m: f64) -> f64 {
+    //! Poisson probability mass function
+
+    if m < 0.0 || k < 0 {
+        return f64::NAN;
+    }
+
+    // (k + (n - 1)) * (1 - p)^k * p^n / (k*(n - 1)*beta(k, n - 1))
+
+    let log_pmf = (k as f64) * m.ln() - m - lgam(k as f64 + 1.0);
+
+    log_pmf.exp()
+}
+
 pub fn beta_pdf(a: f64, b: f64, x: f64) -> f64 {
     //! Beta probability density function
 
@@ -178,6 +192,27 @@ mod nbinom_pmf_tests {
         assert_eq!(nbinom_pmf(3, 5, 0.5), 0.13671874999999994);
         assert_eq!(nbinom_pmf(150, 155, 0.5), 0.022270220044768158);
         assert_eq!(nbinom_pmf(150, 100, 0.01), 5.370670528582223e-130);
+    }
+}
+
+#[cfg(test)]
+mod pois_pmf_tests {
+    use super::*;
+
+    #[test]
+    fn pois_pmf_trivials() {
+        assert_eq!(pois_pmf(5, 0.0), 0.0);
+        assert!(pois_pmf(5, -1e-10).is_nan());
+        assert!(pois_pmf(-1, 0.5).is_nan());
+    }
+
+    #[test]
+    fn pois_pmf_values() {
+        assert_eq!(pois_pmf(0, 0.5), 0.6065306597126334);
+        assert_eq!(pois_pmf(5, 0.5), 0.0001579506926334984);
+        assert_eq!(pois_pmf(150, 0.5), 7.43806550111441e-309);
+        assert_eq!(pois_pmf(50, 0.01), 3.255233773313457e-165);
+        assert_eq!(pois_pmf(50, 1e2), 1.2231421635189012e-08);
     }
 }
 
