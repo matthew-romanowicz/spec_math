@@ -253,8 +253,137 @@ impl NBinomDist for f64 {
 }
 
 /// Implementations of gamma functions as a trait
+///
+/// ## Examples
+///
+/// Gamma and reciprocal gamma functions multiply to 1:
+///
+/// ```
+/// use spec_math::Gamma;
+///
+/// for x in (1..100).map(|i| i as f64) {
+///     let gam = x.gamma();
+///     let rgam = x.rgamma();
+///     assert!(gam * rgam - 1.0 < 1e-13);
+/// }
+/// ```
+///
+/// Upper and lower incomplete gamma functions sum to 1:
+///
+/// ```
+/// use spec_math::Gamma;
+///
+/// for s in (1..100).map(|i| i as f64) {
+///     for x in (0..100).map(|i| i as f64) {
+///         let lower = s.igamma(x);
+///         let upper = s.igammac(x);
+///         assert!(lower + upper - 1.0 < 1e-14);
+///     }
+/// }
+/// ```
 pub trait Gamma {
+
     /// Gamma function
+    ///
+    /// ## Description
+    ///
+    /// Approximation of the gamma function
+    ///
+    /// ## Domain
+    ///
+    /// Returns NAN for the following inputs: NAN, 0.0, negative 
+    /// integers, and negative infinity. Returns positivy infinity 
+    /// when a positive overflow condition is encountered.
+    ///
+    /// ## Examples
+    ///
+    /// Gamma of a positive integer `n` is equal to the factorial of `n - 1`:
+    ///
+    /// ```
+    /// use spec_math::Gamma;
+    /// 
+    /// let mut fac = 1.0;
+    /// for n in (1..20).map(|i| i as f64) {
+    ///     assert_eq!(fac, n.gamma());
+    ///     fac *= n;
+    /// }
+    /// ```
+    ///
+    /// Gamma of a nonpositive integer is NAN:
+    ///
+    /// ```
+    /// use spec_math::Gamma;
+    /// 
+    /// for n in (-100..=0).map(|i| i as f64) {
+    ///     assert!(n.gamma().is_nan());
+    /// }
+    /// ```
+    ///
+    /// Gamma of a real number `x + 1` is equal to `x * x.gamma()`
+    ///
+    /// ```
+    /// use spec_math::Gamma;
+    ///    
+    /// // Positive numbers at increments of 0.5 (0.5, 1.0, 1.5, ...)
+    /// for x in (1..100).map(|i| 0.5 * (i as f64)) {
+    ///     let a = (x + 1.0).gamma();
+    ///     let b = x * x.gamma();
+    ///     let rel_err = (a - b) / b;
+    ///     assert!(rel_err < 1e-15);
+    /// }
+    ///
+    /// // Negative numbers at increments of 0.5 offset by 0.25
+    /// // (-0.25, -0.75, -1.25, ...)
+    /// for x in (0..100).map(|i| -0.5 * (i as f64) - 0.25) {
+    ///     let a = (x + 1.0).gamma();
+    ///     let b = x * x.gamma();
+    ///     let rel_err = (a - b) / b;
+    ///     assert!(rel_err < 1e-15);        
+    /// }
+    /// ```
+    ///
+    /// Particular values (from [wikipedia](https://en.wikipedia.org/wiki/Particular_values_of_the_gamma_function)):
+    ///
+    /// ```
+    /// use spec_math::Gamma;
+    ///
+    /// let sqrt_pi = std::f64::consts::PI.sqrt();
+    ///
+    /// let a = (-5.0 / 2.0).gamma();
+    /// let b = -8.0 * sqrt_pi / 15.0;
+    /// let rel_err = (a - b) / b;
+    /// assert!(rel_err.abs() < 1e-15);
+    ///
+    /// let a = (-3.0 / 2.0).gamma();
+    /// let b = 4.0 * sqrt_pi / 3.0;
+    /// let rel_err = (a - b) / b;
+    /// assert!(rel_err.abs() < 1e-15);
+    ///
+    /// let a = (-1.0 / 2.0).gamma();
+    /// let b = -2.0 * sqrt_pi;
+    /// let rel_err = (a - b) / b;
+    /// assert!(rel_err.abs() < 1e-15);
+    ///
+    /// let a = (1.0 / 2.0).gamma();
+    /// let b = sqrt_pi;
+    /// let rel_err = (a - b) / b;
+    /// assert!(rel_err.abs() < 1e-15);
+    ///
+    /// let a = (3.0 / 2.0).gamma();
+    /// let b = sqrt_pi / 2.0;
+    /// let rel_err = (a - b) / b;
+    /// assert!(rel_err.abs() < 1e-15);
+    ///
+    /// let a = (5.0 / 2.0).gamma();
+    /// let b = 3.0 * sqrt_pi / 4.0;
+    /// let rel_err = (a - b) / b;
+    /// assert!(rel_err.abs() < 1e-15);
+    ///
+    /// let a = (7.0 / 2.0).gamma();
+    /// let b = 15.0 * sqrt_pi / 8.0;
+    /// let rel_err = (a - b) / b;
+    /// assert!(rel_err.abs() < 1e-15);
+    /// ```
     fn gamma(&self) -> Self;
 
     /// Natural logarithm of the absolute value of the gamma function

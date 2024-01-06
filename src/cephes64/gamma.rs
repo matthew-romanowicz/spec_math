@@ -124,7 +124,13 @@ pub fn gamma(x: f64) -> f64 {
     let mut sgngam = 1;
 
     if x.is_infinite() {
-        return x;
+        //return x;
+        // M. Romanowicz: Should return NAN for negative infinity
+        if x > 0.0 {
+            return x;
+        } else {
+            return f64::NAN;
+        }
     }
     let q = x.abs();
 
@@ -134,7 +140,9 @@ pub fn gamma(x: f64) -> f64 {
             if p == q {
                 // gamnan:
                 // sf_error("Gamma", SF_ERROR_OVERFLOW, NULL);
-                return f64::INFINITY;
+                //return f64::INFINITY;
+                // M. Romanowicz: Should return NAN for negative integers
+                return f64::NAN;
             }
             if (p as isize & 1) == 0 {
                 sgngam = -1;
@@ -167,7 +175,9 @@ pub fn gamma(x: f64) -> f64 {
     while x < 0.0 {
         if x > -1.0E-9 {
             if x == 0.0 {
-                return f64::INFINITY;
+                //return f64::INFINITY;
+                // M. Romanowicz: Should return NAN for negative integers
+                return f64::NAN;
             }
             else {
                 return z / ((1.0 + 0.5772156649015329 * x) * x);
@@ -180,7 +190,9 @@ pub fn gamma(x: f64) -> f64 {
     while x < 2.0 {
         if x < 1.0e-9 {
             if x == 0.0 {
-                return f64::INFINITY;
+                //return f64::INFINITY;
+                // M. Romanowicz: Should return NAN for negative integers
+                return f64::NAN;
             }
             else {
                 return z / ((1.0 + 0.5772156649015329 * x) * x);
@@ -411,11 +423,11 @@ mod gamma_tests {
     #[test]
     fn gamma_trivials() {
         assert_eq!(gamma(f64::INFINITY), f64::INFINITY);
-        //assert_eq!(gamma(-f64::INFINITY).is_nan(), true);
+        assert_eq!(gamma(-f64::INFINITY).is_nan(), true);
         assert_eq!(gamma(f64::NAN).is_nan(), true);
-        assert_eq!(gamma(0.0), f64::INFINITY);
-        assert_eq!(gamma(-10.0), f64::INFINITY);
-        assert_eq!(gamma(-1e20), f64::INFINITY);
+        assert_eq!(gamma(0.0).is_nan(), true);
+        assert_eq!(gamma(-10.0).is_nan(), true);
+        assert_eq!(gamma(-1e20).is_nan(), true);
     }
 
     #[test]
