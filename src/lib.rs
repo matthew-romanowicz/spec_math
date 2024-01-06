@@ -118,6 +118,19 @@ impl ShiChi for f64 {
     }
 }
 
+/// Implementations of the generalized exponential integral as a trait
+pub trait Expn {
+    /// Generalized exponential integral
+    fn expn(&self, n: i32) -> Self;
+}
+
+impl Expn for f64 {
+    fn expn(&self, n: i32) -> f64 {
+        //! Uses [`cephes64::expn`](crate::cephes64::expn)
+        crate::cephes64::expn(n, *self)
+    }
+}
+
 /// Implementations of Dawson integral as a trait
 pub trait Dawson {
     /// Dawson integral
