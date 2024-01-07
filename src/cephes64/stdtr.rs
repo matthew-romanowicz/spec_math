@@ -1,84 +1,3 @@
-/*                                                     stdtr.c
-*
-*     Student's t distribution
-*
-*
-*
-* SYNOPSIS:
-*
-* double t, stdtr();
-* short k;
-*
-* y = stdtr( k, t );
-*
-*
-* DESCRIPTION:
-*
-* Computes the integral from minus infinity to t of the Student
-* t distribution with integer k > 0 degrees of freedom:
-*
-*                                      t
-*                                      -
-*                                     | |
-*              -                      |         2   -(k+1)/2
-*             | ( (k+1)/2 )           |  (     x   )
-*       ----------------------        |  ( 1 + --- )        dx
-*                     -               |  (      k  )
-*       sqrt( k pi ) | ( k/2 )        |
-*                                   | |
-*                                    -
-*                                   -inf.
-*
-* Relation to incomplete beta integral:
-*
-*        1 - stdtr(k,t) = 0.5 * incbet( k/2, 1/2, z )
-* where
-*        z = k/(k + t**2).
-*
-* For t < -2, this is the method of computation.  For higher t,
-* a direct method is derived from integration by parts.
-* Since the function is symmetric about t=0, the area under the
-* right tail of the density is found by calling the function
-* with -t instead of t.
-*
-* ACCURACY:
-*
-* Tested at random 1 <= k <= 25.  The "domain" refers to t.
-*                      Relative error:
-* arithmetic   domain     # trials      peak         rms
-*    IEEE     -100,-2      50000       5.9e-15     1.4e-15
-*    IEEE     -2,100      500000       2.7e-15     4.9e-17
-*/
-
-/*                                                     stdtri.c
-*
-*     Functional inverse of Student's t distribution
-*
-*
-*
-* SYNOPSIS:
-*
-* double p, t, stdtri();
-* int k;
-*
-* t = stdtri( k, p );
-*
-*
-* DESCRIPTION:
-*
-* Given probability p, finds the argument t such that stdtr(k,t)
-* is equal to p.
-*
-* ACCURACY:
-*
-* Tested at random 1 <= k <= 100.  The "domain" refers to p:
-*                      Relative error:
-* arithmetic   domain     # trials      peak         rms
-*    IEEE    .001,.999     25000       5.7e-15     8.0e-16
-*    IEEE    10^-6,.001    25000       2.0e-12     2.9e-14
-*/
-
-
 /*
 * Cephes Math Library Release 2.3:  March, 1995
 * Copyright 1984, 1987, 1995 by Stephen L. Moshier
@@ -88,10 +7,59 @@ use crate::cephes64::consts::{M_PI, MACHEP};
 use crate::cephes64::incbet::incbet;
 use crate::cephes64::incbi::incbi;
 
-pub fn stdtr(k: isize, t: f64) -> f64
-{
-    //double x, rk, z, f, tz, p, xsqk;
-    //int j;
+pub fn stdtr(k: isize, t: f64) -> f64 {
+    //! Student's t distribution
+    //!
+    //! ## DESCRIPTION:
+    //!
+    //! Computes the integral from minus infinity to t of the Student
+    //! t distribution with integer k > 0 degrees of freedom:
+    //!
+    #![doc=include_str!("stdtr.svg")]
+    //!
+    //! Relation to incomplete beta integral:
+    //!
+    //! `1 - stdtr(k,t) = 0.5 * incbet( k/2, 1/2, z )`
+    //!
+    //! where
+    //!
+    //! `z = k/(k + t**2)`
+    //!
+    //! For t < -2, this is the method of computation.  For higher t,
+    //! a direct method is derived from integration by parts.
+    //! Since the function is symmetric about t=0, the area under the
+    //! right tail of the density is found by calling the function
+    //! with -t instead of t.
+    //!
+    //! ## ACCURACY:
+    //!
+    //! Tested at random 1 <= k <= 25.  The "domain" refers to t.
+    //!
+    //! Relative error:
+    //!
+    //!<table>
+    //! <tr>
+    //!     <th>Arithmetic</th>
+    //!     <th>Domain</th>
+    //!     <th># Trials</th>
+    //!     <th>Peak</th>
+    //!     <th>RMS</th>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>-100, -2</td>
+    //!     <td>50000</td>
+    //!     <td>5.9e-15</td>
+    //!     <td>1.4e-15</td>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>-2, 100</td>
+    //!     <td>500000</td>
+    //!     <td>2.7e-15</td>
+    //!     <td>4.9e-17</td>
+    //! </tr>
+    //!</table>
 
     if k <= 0 {
         //sf_error("stdtr", SF_ERROR_DOMAIN, NULL);
@@ -156,10 +124,43 @@ pub fn stdtr(k: isize, t: f64) -> f64
     }
 }
 
-pub fn stdtri(k: isize, p: f64) -> f64
-{
-    // double t, rk, z;
-    // int rflg;
+pub fn stdtri(k: isize, p: f64) -> f64 {
+    //! Functional inverse of Student's t distribution
+    //!
+    //! ## DESCRIPTION:
+    //!
+    //! Given probability `p`, finds the argument `t` such that `stdtr(k,t)`
+    //! is equal to `p`.
+    //!
+    //! ## ACCURACY:
+    //!
+    //! Tested at random `1 <= k <= 100`.  The "domain" refers to `p`:
+    //!
+    //! Relative error:
+    //!
+    //!<table>
+    //! <tr>
+    //!     <th>Arithmetic</th>
+    //!     <th>Domain</th>
+    //!     <th># Trials</th>
+    //!     <th>Peak</th>
+    //!     <th>RMS</th>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>0.001, 0.999</td>
+    //!     <td>25000</td>
+    //!     <td>5.7e-15</td>
+    //!     <td>8.0e-16</td>
+    //! </tr>
+    //! <tr>
+    //!     <td>IEEE</td>
+    //!     <td>1e-6, 0.001</td>
+    //!     <td>25000</td>
+    //!     <td>2.0e-12</td>
+    //!     <td>2.9e-146</td>
+    //! </tr>
+    //!</table>
 
     if k <= 0 || !(0.0..=1.0).contains(&p) {
         //sf_error("stdtri", SF_ERROR_DOMAIN, NULL);
