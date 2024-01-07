@@ -61,7 +61,7 @@ use super::consts::{M_PI, M_PI_2, MACHEP};
 use super::ellpk::ellpk;
 
 //$$F(\varphi, m) = \int_{0}^{\varphi} \frac{d\theta}{\sqrt{1 - m\,\sin^2(\theta)}}$$
-
+// TODO: Expand domain to match wolfram|alpha
 pub fn ellik(phi: f64,  m: f64) -> f64
 {
 //! Incomplete elliptic integral of the first kind

@@ -350,12 +350,135 @@ impl Polylog for f64 {
 /// Implementations of Normal (Gaussian) distribution as a trait
 pub trait NormDist {
     /// Normal probability density function
+    ///
+    /// # Description:
+    ///
+    /// Returns the probability density of the normal distribution 
+    /// function at `self`.
+    ///
+    /// # Domain:
+    ///
+    /// Function is defined for all real numbers. Returns `NAN` if
+    /// input is `NAN`.
+    ///
+    /// # Examples:
+    ///
+    /// Particular values:
+    ///
+    /// ```
+    /// use spec_math::NormDist;
+    /// 
+    /// // Normal PDF approaches 0 at infinity and negative infinity
+    /// assert_eq!((f64::INFINITY).norm_pdf(), 0.0);
+    /// assert_eq!((-f64::INFINITY).norm_pdf(), 0.0);
+    /// 
+    /// // Normal PDF is equal to 1/sqrt(2 * pi) at 0
+    /// assert_eq!((0.0_f64).norm_pdf(), 1.0 / (2.0 * std::f64::consts::PI).sqrt());
+    /// ```
+    ///
+    /// Symmetry about 0.0:
+    ///
+    /// ```
+    /// use spec_math::NormDist;
+    /// 
+    /// // 0.0 to 10.0 at 0.1 increments
+    /// for x in (0..=100).map(|i| i as f64 * 0.1) {
+    ///     assert_eq!(x.norm_pdf(), (-x).norm_pdf());
+    /// }    
+    /// ```
     fn norm_pdf(&self) -> Self;
 
     /// Normal cumulative distribution function
+    ///
+    /// # Description:
+    ///
+    /// Returns the area under the normal distribution curve from
+    /// negative infinity to `self`.
+    ///
+    /// # Domain:
+    ///
+    /// Function is defined for all real numbers. Returns `NAN` if
+    /// input is `NAN`.
+    ///
+    /// # Examples:
+    ///
+    /// Particular values:
+    ///
+    /// ```
+    /// use spec_math::NormDist;
+    /// 
+    /// // Normal CDF approaches 1 at infinity and 0 at negative infinity
+    /// assert_eq!((f64::INFINITY).norm_cdf(), 1.0);
+    /// assert_eq!((-f64::INFINITY).norm_cdf(), 0.0);
+    /// 
+    /// // One-tailed z-value for 95% confidence is approximately 1.645
+    /// let p_95 = (1.645_f64).norm_cdf();
+    /// assert!((p_95 - 0.95).abs() < 1e-3);
+    ///
+    /// // One-tailed z-value for 99% confidence is approximately 2.33
+    /// let p_99 = (2.33_f64).norm_cdf();
+    /// assert!((p_99 - 0.99).abs() < 1e-3);
+    /// ```
+    ///
+    /// Association with the error function ([DLMF 7.20(iii)](https://dlmf.nist.gov/7.20#iii))
+    ///
+    /// ```
+    /// use spec_math::{Erf, NormDist};
+    /// 
+    /// // 0.0 to 10.0 at 0.1 increments
+    /// for x in (0..=100).map(|i| i as f64 * 0.1) {
+    ///     let a = x.norm_cdf();
+    ///     let b = 0.5 * (-x / (2.0_f64).sqrt()).erfc();
+    ///     let abs_err = a - b;
+    ///     assert!(abs_err.abs() < 1e-14);
+    /// }    
+    /// ```
     fn norm_cdf(&self) -> Self;
 
     /// Inverse of normal cumulative distribution function
+    ///
+    /// # Description:
+    ///
+    /// Returns `x` such that `x.norm_cdf()` is equal to `self`.
+    ///
+    /// # Domain:
+    ///
+    /// Returns `NAN` for input values outside of [0.0, 1.0]. Returns negative
+    /// infinity for 0.0 and positive infinity for 1.0.
+    ///
+    /// # Examples:
+    ///
+    /// Particular values:
+    ///
+    /// ```
+    /// use spec_math::NormDist;
+    /// 
+    /// // Normal CDF approaches 1 at infinity and 0 at negative infinity
+    /// assert_eq!((0.0_f64).norm_cdf_inv(), -f64::INFINITY);
+    /// assert_eq!((1.0_f64).norm_cdf_inv(), f64::INFINITY);
+    /// 
+    /// // One-tailed z-value for 95% confidence is approximately 1.645
+    /// let z_95 = (0.95_f64).norm_cdf_inv();
+    /// assert!((z_95 - 1.645).abs() < 1e-3);
+    ///
+    /// // One-tailed z-value for 99% confidence is approximately 2.33
+    /// let z_99 = (0.99_f64).norm_cdf_inv();
+    /// assert!((z_99 - 2.33).abs() < 5e-3);
+    /// ```
+    ///
+    /// Association with normal CDF:
+    ///
+    /// ```
+    /// use spec_math::NormDist;
+    /// 
+    /// // -5.0 to 5.0 at 0.1 increments
+    /// for x in (-50..=50).map(|i| i as f64 * 0.1) {
+    ///     let p = x.norm_cdf();
+    ///     let x2 = p.norm_cdf_inv();
+    ///     let abs_err = x - x2;
+    ///     assert!(abs_err.abs() < 1e-10);
+    /// }    
+    /// ```
     fn norm_cdf_inv(&self) -> Self;
 }
 
@@ -1032,16 +1155,135 @@ pub trait Ellip: Sized {
     fn ellip_j(&self, m: Self) -> EllipJOutput<Self>;
 
     /// Complete elliptic integral of the second kind
+    ///
+    /// # Description:
+    ///
+    /// Approximates the complete elliptic integral of the second kind 
+    /// with `self` as the k squared term.
+    ///
+    /// [Wikipedia](https://en.wikipedia.org/wiki/Elliptic_integral#Complete_elliptic_integral_of_the_second_kind)
+    ///
+    /// # Domain:
+    ///
+    /// Returns `NAN` for values greater than 1.0
+    ///
+    /// # Examples:
+    ///
+    /// Particular values:
+    ///
+    /// ```
+    /// use spec_math::Ellip;
+    ///
+    /// // E(0) = pi / 2
+    /// assert_eq!((0.0_f64).ellip_e(), 0.5 * std::f64::consts::PI);
+    ///
+    /// // E(1) = 1
+    /// assert_eq!((1.0_f64).ellip_e(), 1.0);
+    /// ```
+    ///
+    /// Association with the incomplete elliptic integral of the 
+    /// second kind ([DLMF 19.2.8](https://dlmf.nist.gov/19.2#E8)):
+    ///
+    /// ```
+    /// use spec_math::Ellip;
+    ///
+    /// // 0.0 to 1.0 in 0.01 increments
+    /// for x in (0..=100).map(|i| i as f64 * 0.01) {
+    ///     let p_e = x.ellip_e();
+    ///     let i_e = x.ellip_e_inc(std::f64::consts::FRAC_PI_2);
+    ///     let rel_err = (i_e - p_e) / p_e;
+    ///     assert!(rel_err.abs() < 1e-15);
+    /// }
+    ///
+    /// // -100.0 to -0.5 in 0.5 increments
+    /// for x in (-200..0).map(|i| i as f64 * 0.5) {
+    ///     let p_e = x.ellip_e();
+    ///     let i_e = x.ellip_e_inc(std::f64::consts::FRAC_PI_2);
+    ///     let rel_err = (i_e - p_e) / p_e;
+    ///     assert!(rel_err.abs() < 1e-15);
+    /// }
+    /// ```    
     fn ellip_e(&self) -> Self;
 
     /// Complete elliptic integral of the first kind
+    ///
+    /// # Description:
+    ///
+    /// Approximates the complete elliptic integral of the first kind 
+    /// with `self` as the k squared term.
+    ///
+    /// [Wikipedia](https://en.wikipedia.org/wiki/Elliptic_integral#Complete_elliptic_integral_of_the_first_kind)
+    ///
+    /// # Domain:
+    ///
+    /// Returns `NAN` for values greater than 1.0. Returns infinity for 1.0.
+    ///
+    /// # Examples:
+    ///
+    /// Particular values:
+    ///
+    /// ```
+    /// use spec_math::Ellip;
+    ///
+    /// // K(0) = pi / 2
+    /// assert_eq!((0.0_f64).ellip_k(), 0.5 * std::f64::consts::PI);
+    ///
+    /// // K(x) approaches 0 as x approaches negative infinity
+    /// assert_eq!((-f64::INFINITY).ellip_k(), 0.0);
+    ///
+    /// // K(x) approaches infinity as x approaches 1.0
+    /// assert_eq!((1.0_f64).ellip_k(), f64::INFINITY);
+    /// ```
+    ///
+    /// Association with the incomplete elliptic integral of the 
+    /// first kind ([DLMF 19.2.8](https://dlmf.nist.gov/19.2#E8)):
+    ///
+    /// ```
+    /// use spec_math::Ellip;
+    ///
+    /// // 0.0 to 0.99 in 0.01 increments
+    /// for x in (0..100).map(|i| i as f64 * 0.01) {
+    ///     let p_k = x.ellip_k();
+    ///     let i_k = x.ellip_k_inc(std::f64::consts::FRAC_PI_2);
+    ///     let rel_err = (i_k - p_k) / p_k;
+    ///     assert!(rel_err.abs() < 1e-15);
+    /// }
+    ///
+    /// // -100.0 to -0.5 in 0.5 increments
+    /// for x in (-200..0).map(|i| i as f64 * 0.5) {
+    ///     let p_k = x.ellip_k();
+    ///     let i_k = x.ellip_k_inc(std::f64::consts::FRAC_PI_2);
+    ///     let rel_err = (i_k - p_k) / p_k;
+    ///     assert!(rel_err.abs() < 1e-15);
+    /// }
+    /// ```    
     fn ellip_k(&self) -> Self;
 
     /// Incomplete elliptic integral of the second kind
-    fn ellip_e_inc(&self, m: Self) -> Self;
+    ///
+    /// # Description:
+    ///
+    /// Approximates the incomplete elliptic integral of the second kind 
+    /// with `self` as the k squared term.
+    ///
+    /// [Wikipedia](https://en.wikipedia.org/wiki/Elliptic_integral#Incomplete_elliptic_integral_of_the_second_kind)
+    fn ellip_e_inc(&self, phi: Self) -> Self;
 
     /// Incomplete elliptic integral of the first kind
-    fn ellip_k_inc(&self, m: Self) -> Self;
+    ///
+    /// # Description:
+    ///
+    /// Approximates the incomplete elliptic integral of the first kind 
+    /// with `self` as the k squared term.
+    ///
+    /// [Wikipedia](https://en.wikipedia.org/wiki/Elliptic_integral#Incomplete_elliptic_integral_of_the_first_kind)
+    ///
+    /// # Domain:
+    ///
+    /// Returns `NAN` if either paramter is `NAN`, if 'self > 1.0`, or 
+    /// if both paramters are infinite. Returns infinity is `self == 1.0`
+    /// and phi is outside of `[-pi / 2, pi / 2]`
+    fn ellip_k_inc(&self, phi: Self) -> Self;
 }
 
 impl Ellip for f64 {
@@ -1051,20 +1293,20 @@ impl Ellip for f64 {
         EllipJOutput::<f64> {sn: res.0, cn: res.1, dn: res.2, phi: res.3}
     }
     fn ellip_e(&self) -> f64 {
-        //! Uses [`cephes64::ellpe`](crate::cephes64::ellpe) evaluated at `1.0 - self`
-        crate::cephes64::ellpe(1.0 - *self)
+        //! Uses [`cephes64::ellpe`](crate::cephes64::ellpe)
+        crate::cephes64::ellpe(*self)
     }
     fn ellip_k(&self) -> f64 {
         //! Uses [`cephes64::ellpk`](crate::cephes64::ellpk) evaluated at `1.0 - self`
         crate::cephes64::ellpk(1.0 - *self)
     }
-    fn ellip_e_inc(&self, m: f64) -> f64 {
+    fn ellip_e_inc(&self, phi: f64) -> f64 {
         //! Uses [`cephes64::ellie`](crate::cephes64::ellie)
-        crate::cephes64::ellie(*self, m)
+        crate::cephes64::ellie(phi, *self)
     }
-    fn ellip_k_inc(&self, m: f64) -> f64 {
+    fn ellip_k_inc(&self, phi: f64) -> f64 {
         //! Uses [`cephes64::ellik`](crate::cephes64::ellik)
-        crate::cephes64::ellik(*self, m)
+        crate::cephes64::ellik(phi, *self)
     }
 }
 
