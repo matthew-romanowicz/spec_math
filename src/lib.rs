@@ -44,16 +44,206 @@ pub struct ShiChiOutput<T> {
 
 /// Implementations of error functions as a trait
 pub trait Erf {
+
     /// Error function
+    ///
+    /// # Description
+    ///
+    /// Approximation of the error function
+    ///
+    /// # Domain
+    ///
+    /// Function is defined for all real numbers.
+    ///
+    /// # Examples
+    ///
+    /// Particular Values
+    ///
+    /// ```
+    /// use spec_math::Erf;
+    /// 
+    /// assert_eq!(0.0_f64.erf(), 0.0);
+    /// assert_eq!(f64::INFINITY.erf(), 1.0);
+    /// assert_eq!((-f64::INFINITY).erf(), -1.0);
+    /// ```
+    ///
+    /// Symmetry
+    ///
+    /// ```
+    /// use spec_math::Erf;
+    /// 
+    /// // 0 to 5 in increments of 0.05
+    /// for x in (0..=100).map(|i| i as f64 * 0.05) {
+    ///     assert_eq!((-x).erf(), -x.erf());
+    /// }
+    /// ```
+    ///
+    /// Relationship with incomplete gamma function ([DLMF 7.11.1](https://dlmf.nist.gov/7.11))
+    ///
+    /// ```
+    /// use spec_math::{Erf, Gamma};
+    /// 
+    /// let sqrt_pi = std::f64::consts::PI.sqrt();
+    ///
+    /// // 0 to 5 in increments of 0.05
+    /// for x in (0..=100).map(|i| i as f64 * 0.05) {
+    ///     let a = sqrt_pi * x.erf();
+    ///     let b = (0.5_f64).igamma(x * x) * (0.5_f64).gamma();
+    ///     if a != 0.0 {
+    ///         let rel_err = (a - b) / a;
+    ///         assert!(rel_err.abs() < 5e-15); 
+    ///     } else {
+    ///         let abs_err = a - b;
+    ///         assert!(abs_err.abs() < 5e-15); 
+    ///     }
+    /// }
+    /// ```
     fn erf(&self) -> Self;
 
-    /// Complimentary error function
+    /// Compliment of the error function
+    ///
+    /// # Description
+    ///
+    /// Approximation of the compliment of the error function. Useful for 
+    /// precise evaluation at large inputs.
+    ///
+    /// # Domain
+    ///
+    /// Function is defined for all real numbers.
+    ///
+    /// # Examples
+    ///
+    /// Relationship with erf
+    ///
+    /// ```
+    /// use spec_math::Erf;
+    /// 
+    /// // -5 to 5 in increments of 0.05
+    /// for x in (-100..=100).map(|i| i as f64 * 0.05) {
+    ///     let a = x.erf();
+    ///     let b = x.erfc();
+    ///     let abs_err = (a + b - 1.0).abs();
+    ///     assert!(abs_err < 1e-15);
+    /// }
+    /// ```
+    ///
+    /// Relationship with incomplete gamma function ([DLMF 7.11.2](https://dlmf.nist.gov/7.11))
+    ///
+    /// ```
+    /// use spec_math::{Erf, Gamma};
+    /// 
+    /// let sqrt_pi = std::f64::consts::PI.sqrt();
+    ///
+    /// // 0 to 5 in increments of 0.05
+    /// for x in (0..=100).map(|i| i as f64 * 0.05) {
+    ///     let a = sqrt_pi * x.erfc();
+    ///     let b = (0.5_f64).igammac(x * x) * (0.5_f64).gamma();
+    ///     if a != 0.0 {
+    ///         let rel_err = (a - b) / a;
+    ///         assert!(rel_err.abs() < 3e-14); 
+    ///     } else {
+    ///         let abs_err = a - b;
+    ///         assert!(abs_err.abs() < 5e-15); 
+    ///     }
+    /// }
+    /// ```
     fn erfc(&self) -> Self;
 
     /// Inverse error function
+    ///
+    /// # Description
+    ///
+    /// Approximation of the inverse of the error function.
+    ///
+    /// # Domain
+    ///
+    /// Returns `NAN` for inputs less than -1.0 and greater than 1.0.
+    /// Returns infinity for 1.0 and negative infinity for -1.0. Note
+    /// that the function becomes very steep near -1.0 and 1.0 and so
+    /// the floating point precision can heavily influence the output
+    /// in those regions.
+    ///
+    /// # Examples
+    ///
+    /// Domain
+    ///
+    /// ```
+    /// use spec_math::Erf;
+    ///
+    /// assert!((-1.1).erf_inv().is_nan());
+    /// assert!((1.1).erf_inv().is_nan());
+    ///
+    /// assert_eq!((-1.0).erf_inv(), -f64::INFINITY);
+    /// assert_eq!((1.0).erf_inv(), f64::INFINITY);
+    /// ```
+    ///
+    /// Relationship with erf
+    ///
+    /// ```
+    /// use spec_math::Erf;
+    /// 
+    /// // -2 to 2 in increments of 0.02
+    /// for x in (-100..=100).map(|i| i as f64 * 0.02) {
+    ///     let y = x.erf();
+    ///     let x2 = y.erf_inv();
+    ///     if x != 0.0 {
+    ///         let rel_err = (x - x2) / x;
+    ///         assert!(rel_err.abs() < 1e-14); 
+    ///     } else {
+    ///         let abs_err = x - x2;
+    ///         assert!(abs_err.abs() < 1e-15); 
+    ///     }
+    /// }
+    /// ```
     fn erf_inv(&self) -> Self;
 
     /// Inverse complimentary error function
+    ///
+    /// # Description
+    ///
+    /// Approximation of the inverse of the complimentary error function.
+    ///
+    /// # Domain
+    ///
+    /// Returns `NAN` for inputs less than 0.0 and greater than 2.0.
+    /// Returns infinity for 0.0 and negative infinity for 2.0. Note
+    /// that the function becomes very steep near 2.0 and 0.0 and so
+    /// the floating point precision can heavily influence the output
+    /// in those regions. This is less significant in the 0.0 region than
+    /// the 2.0 region.
+    ///
+    /// # Examples
+    ///
+    /// Domain
+    ///
+    /// ```
+    /// use spec_math::Erf;
+    ///
+    /// assert!((-0.1).erfc_inv().is_nan());
+    /// assert!((2.1).erfc_inv().is_nan());
+    ///
+    /// assert_eq!((0.0).erfc_inv(), f64::INFINITY);
+    /// assert_eq!((2.0).erfc_inv(), -f64::INFINITY);
+    /// ```
+    ///
+    /// Relationship with erfc
+    ///
+    /// ```
+    /// use spec_math::Erf;
+    /// 
+    /// // -2 to 2 in increments of 0.02
+    /// for x in (-100..=100).map(|i| i as f64 * 0.02) {
+    ///     let y = x.erfc();
+    ///     let x2 = y.erfc_inv();
+    ///     if x != 0.0 {
+    ///         let rel_err = (x - x2) / x;
+    ///         assert!(rel_err.abs() < 1e-14); 
+    ///     } else {
+    ///         let abs_err = x - x2;
+    ///         assert!(abs_err.abs() < 1e-15); 
+    ///     }
+    /// }
+    /// ```
     fn erfc_inv(&self) -> Self;
 }
 
@@ -253,49 +443,21 @@ impl NBinomDist for f64 {
 }
 
 /// Implementations of gamma functions as a trait
-///
-/// ## Examples
-///
-/// Gamma and reciprocal gamma functions multiply to 1:
-///
-/// ```
-/// use spec_math::Gamma;
-///
-/// for x in (1..100).map(|i| i as f64) {
-///     let gam = x.gamma();
-///     let rgam = x.rgamma();
-///     assert!(gam * rgam - 1.0 < 1e-13);
-/// }
-/// ```
-///
-/// Upper and lower incomplete gamma functions sum to 1:
-///
-/// ```
-/// use spec_math::Gamma;
-///
-/// for s in (1..100).map(|i| i as f64) {
-///     for x in (0..100).map(|i| i as f64) {
-///         let lower = s.igamma(x);
-///         let upper = s.igammac(x);
-///         assert!(lower + upper - 1.0 < 1e-14);
-///     }
-/// }
-/// ```
 pub trait Gamma {
 
     /// Gamma function
     ///
-    /// ## Description
+    /// # Description
     ///
     /// Approximation of the gamma function
     ///
-    /// ## Domain
+    /// # Domain
     ///
     /// Returns NAN for the following inputs: NAN, 0.0, negative 
     /// integers, and negative infinity. Returns positivy infinity 
     /// when a positive overflow condition is encountered.
     ///
-    /// ## Examples
+    /// # Examples
     ///
     /// Gamma of a positive integer `n` is equal to the factorial of `n - 1`:
     ///
@@ -347,64 +509,230 @@ pub trait Gamma {
     /// ```
     /// use spec_math::Gamma;
     ///
-    /// let sqrt_pi = std::f64::consts::PI.sqrt();
-    ///
-    /// let a = (-5.0 / 2.0).gamma();
-    /// let b = -8.0 * sqrt_pi / 15.0;
-    /// let rel_err = (a - b) / b;
-    /// assert!(rel_err.abs() < 1e-15);
-    ///
-    /// let a = (-3.0 / 2.0).gamma();
-    /// let b = 4.0 * sqrt_pi / 3.0;
-    /// let rel_err = (a - b) / b;
-    /// assert!(rel_err.abs() < 1e-15);
-    ///
-    /// let a = (-1.0 / 2.0).gamma();
-    /// let b = -2.0 * sqrt_pi;
-    /// let rel_err = (a - b) / b;
-    /// assert!(rel_err.abs() < 1e-15);
-    ///
     /// let a = (1.0 / 2.0).gamma();
-    /// let b = sqrt_pi;
-    /// let rel_err = (a - b) / b;
-    /// assert!(rel_err.abs() < 1e-15);
-    ///
-    /// let a = (3.0 / 2.0).gamma();
-    /// let b = sqrt_pi / 2.0;
-    /// let rel_err = (a - b) / b;
-    /// assert!(rel_err.abs() < 1e-15);
-    ///
-    /// let a = (5.0 / 2.0).gamma();
-    /// let b = 3.0 * sqrt_pi / 4.0;
-    /// let rel_err = (a - b) / b;
-    /// assert!(rel_err.abs() < 1e-15);
-    ///
-    /// let a = (7.0 / 2.0).gamma();
-    /// let b = 15.0 * sqrt_pi / 8.0;
+    /// let b = std::f64::consts::PI.sqrt();
     /// let rel_err = (a - b) / b;
     /// assert!(rel_err.abs() < 1e-15);
     /// ```
     fn gamma(&self) -> Self;
 
     /// Natural logarithm of the absolute value of the gamma function
+    ///
+    /// # Description
+    ///
+    /// Approximation of the natural logarithm of the absolute value of the 
+    /// gamma function. Has much slower growth characteristics than the 
+    /// standard gamma function.
+    ///
+    /// # Domain
+    ///
+    /// Returns NAN for negative infinity. Returns positivy infinity 
+    /// for 0.0, negative integers, and when a positive overflow 
+    /// condition is encountered.
+    ///
+    /// # Examples
+    ///
+    /// Lgamma is the natural logarithm of gamma:
+    ///
+    /// ```
+    /// use spec_math::Gamma;
+    ///    
+    /// // Positive numbers at increments of 0.5 (0.5, 1.0, 1.5, ...)
+    /// for x in (1..100).map(|i| 0.5 * (i as f64)) {
+    ///     let a = x.lgamma();
+    ///     let b = x.gamma().ln();
+    ///     let abs_err = a - b;
+    ///     assert!(abs_err.abs() < 1e-13);
+    /// }
+    ///
+    /// // Negative numbers at increments of 0.5 offset by 0.25
+    /// // (-0.25, -0.75, -1.25, ...)
+    /// for x in (0..100).map(|i| -0.5 * (i as f64) - 0.25) {
+    ///     let a = x.lgamma();
+    ///     let b = x.gamma().abs().ln();
+    ///     let rel_err = (a - b) / b;
+    ///     assert!(rel_err.abs() < 1e-13);        
+    /// }
+    /// ```
+    ///
+    /// Lgamma of a nonpositive integer is infinity:
+    ///
+    /// ```
+    /// use spec_math::Gamma;
+    /// 
+    /// for n in (-100..=0).map(|i| i as f64) {
+    ///     assert_eq!(n.lgamma(), f64::INFINITY);
+    /// }
+    /// ```
     fn lgamma(&self) -> Self;
 
     /// Regularized lower incomplete gamma function
+    ///
+    /// # Examples
+    ///
+    /// Upper and lower incomplete gamma functions sum to 1:
+    ///
+    /// ```
+    /// use spec_math::Gamma;
+    ///
+    /// for s in (1..100).map(|i| i as f64) {
+    ///     for x in (0..100).map(|i| i as f64) {
+    ///         let lower = s.igamma(x);
+    ///         let upper = s.igammac(x);
+    ///         assert!(lower + upper - 1.0 < 1e-14);
+    ///     }
+    /// }
+    /// ```
+    ///
+    /// Lower gamma recurrence relation (from [DLMF 8.8.1](https://dlmf.nist.gov/8.8))
+    ///
+    /// ```
+    /// use spec_math::Gamma;
+    ///
+    /// for s in (1..100).map(|i| i as f64) {
+    ///     for x in (1..100).map(|i| i as f64) {
+    ///         // Results must be multiplied by s.gamma() to de-regularize them
+    ///         let a = (s + 1.0).igamma(x) * (s + 1.0).gamma();
+    ///         let b = s * s.igamma(x) * s.gamma() - x.powf(s) * (-x).exp();
+    ///         if a != 0.0 {
+    ///             let rel_err = (a - b) / a;
+    ///             assert!(rel_err.abs() < 8e-12); 
+    ///         } else {
+    ///             let abs_err = a - b;
+    ///             assert!(abs_err.abs() < 1e-14); 
+    ///         }
+    ///     }
+    /// }
+    /// ```
     fn igamma(&self, x: Self) -> Self;
 
     /// Regularized upper incomplete gamma function
+    ///
+    /// # Examples
+    ///
+    /// Upper gamma recurrence relation (from [DLMF 8.8.2](https://dlmf.nist.gov/8.8))
+    ///
+    /// ```
+    /// use spec_math::Gamma;
+    ///
+    /// for s in (1..100).map(|i| i as f64) {
+    ///     for x in (1..100).map(|i| i as f64) {
+    ///         // Results must be multiplied by s.gamma() to de-regularize them
+    ///         let a = (s + 1.0).igammac(x) * (s + 1.0).gamma();
+    ///         let b = s * s.igammac(x) * s.gamma() + x.powf(s) * (-x).exp();
+    ///         let rel_err = (a - b) / b;
+    ///         if a != 0.0 {
+    ///             let rel_err = (a - b) / a;
+    ///             assert!(rel_err.abs() < 1e-13); 
+    ///         } else {
+    ///             let abs_err = a - b;
+    ///             assert!(abs_err.abs() < 1e-14); 
+    ///         }
+    ///     }
+    /// }
+    /// ```
+    ///
+    /// See also [`igamma`](crate::Gamma::igamma).
     fn igammac(&self, x: Self) -> Self;
 
     /// Inverse of the regularized lower incomplete gamma function
+    ///
+    /// # Examples
+    ///
+    /// `igamma_inv` is the inverse of `igamma`:
+    ///
+    /// ```
+    /// use spec_math::Gamma;
+    ///
+    /// for s in (1..100).map(|i| i as f64) {
+    ///     for x in (0..20).map(|i| i as f64) {
+    ///         let y = s.igamma(x);
+    ///         let x2 = s.igamma_inv(y);
+    ///         if x != 0.0 {
+    ///             let rel_err = (x - x2) / x;
+    ///             assert!(rel_err.abs() < 1e-9); 
+    ///         } else {
+    ///             let abs_err = x - x2;
+    ///             assert!(abs_err.abs() < 1e-14); 
+    ///         }
+    ///     }
+    /// }
+    /// ```    
     fn igamma_inv(&self, x: Self) -> Self;
 
     /// Inverse of the regularized upper incomplete gamma function
     fn igammac_inv(&self, x: Self) -> Self;
 
     /// Digamma function
+    ///
+    /// Approximates the derivative of the gamma function.
+    ///
+    /// # Examples
+    ///
+    /// Digamma of a real number `x + 1` is equal to `x.digamma() + 1.0 / x`
+    ///
+    /// ```
+    /// use spec_math::Gamma;
+    ///    
+    /// // Positive numbers at increments of 0.5 (0.5, 1.0, 1.5, ...)
+    /// for x in (1..100).map(|i| 0.5 * (i as f64)) {
+    ///     let a = (x + 1.0).digamma();
+    ///     let b = x.digamma() + 1.0 / x;
+    ///     let rel_err = (a - b) / b;
+    ///     assert!(rel_err < 1e-14);
+    /// }
+    ///
+    /// // Negative numbers at increments of 0.5 offset by 0.25
+    /// // (-0.25, -0.75, -1.25, ...)
+    /// for x in (0..100).map(|i| -0.5 * (i as f64) - 0.25) {
+    ///     let a = (x + 1.0).digamma();
+    ///     let b = x.digamma() + 1.0 / x;
+    ///     let rel_err = (a - b) / b;
+    ///     assert!(rel_err < 7e-14);        
+    /// }
+    /// ```
+    ///
+    /// Digamma is the derivative of lgamma:
+    ///
+    /// ```
+    /// use spec_math::Gamma;
+    ///
+    /// const DX: f64 = 1e-10;
+    ///    
+    /// // Positive numbers at increments of 0.5 (0.5, 1.0, 1.5, ...)
+    /// for x in (1..100).map(|i| 0.5 * (i as f64)) {
+    ///     let digam = x.digamma();
+    ///     let dydx = ((x + 0.5 * DX).lgamma() - (x - 0.5 * DX).lgamma()) / DX;
+    ///     let rel_err = (digam - dydx) / dydx;
+    ///     assert!(rel_err.abs() < 1e-3); // dydx approximation is imprecise
+    /// }
+    ///
+    /// // Negative numbers at increments of 0.5 offset by 0.25
+    /// // (-0.25, -0.75, -1.25, ...)
+    /// for x in (0..100).map(|i| -0.5 * (i as f64) - 0.25) {
+    ///     let digam = x.digamma();
+    ///     let dydx = ((x + 0.5 * DX).lgamma() - (x - 0.5 * DX).lgamma()) / DX;
+    ///     let rel_err = (digam - dydx) / dydx;
+    ///     assert!(rel_err.abs() < 1e-2); // dydx approximation is imprecise      
+    /// }
+    /// ```
     fn digamma(&self) -> Self;
 
     /// Reciprocal of the gamma function
+    ///
+    /// # Examples
+    ///
+    /// Gamma and reciprocal gamma functions multiply to 1:
+    ///
+    /// ```
+    /// use spec_math::Gamma;
+    ///
+    /// for x in (1..100).map(|i| i as f64) {
+    ///     let gam = x.gamma();
+    ///     let rgam = x.rgamma();
+    ///     assert!(gam * rgam - 1.0 < 1e-13);
+    /// }
+    /// ```
     fn rgamma(&self) -> Self;
 }
 
