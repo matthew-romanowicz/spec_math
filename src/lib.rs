@@ -1181,6 +1181,29 @@ pub trait Ellip: Sized {
     /// assert_eq!((1.0_f64).ellip_e(), 1.0);
     /// ```
     ///
+    /// Calculation of the polar circumference of Earth from WGS84
+    /// constants:
+    ///
+    /// ```
+    /// use spec_math::Ellip;
+    ///
+    /// // Equatorial radius of Earth (km)
+    /// let a: f64 = 6378.1370;
+    ///
+    /// // Flattening of Earth
+    /// let f: f64 = 1.0 / 298.257223563;
+    ///
+    /// // Eccentricity of Earth squared
+    /// let ecc2 = f * (2.0 - f);
+    ///
+    /// // Polar circumference of Earth (km)
+    /// let pc: f64 = 40007.863;
+    ///
+    /// let pc_calc = 4.0 * a * ecc2.ellip_e();
+    ///
+    /// assert!((pc - pc_calc).abs() < 1e-3);
+    /// ```
+    ///
     /// Association with the incomplete elliptic integral of the 
     /// second kind ([DLMF 19.2.8](https://dlmf.nist.gov/19.2#E8)):
     ///
@@ -1202,7 +1225,30 @@ pub trait Ellip: Sized {
     ///     let rel_err = (i_e - p_e) / p_e;
     ///     assert!(rel_err.abs() < 1e-15);
     /// }
-    /// ```    
+    /// ```
+    /// 
+    /// Association with Carlson's symmetric elliptic integral of the 
+    /// second kind ([DLMF 19.25.1](https://dlmf.nist.gov/19.25#E1)):
+    ///
+    /// ```
+    /// use spec_math::Ellip;
+    ///
+    /// // 0.0 to 1.0 in 0.01 increments
+    /// for x in (0..=100).map(|i| i as f64 * 0.01) {
+    ///     let p_e = x.ellip_e();
+    ///     let rg = (1.0 - x).carlson_rg(0.0, 1.0) * 2.0;
+    ///     let rel_err = (rg - p_e) / p_e;
+    ///     assert!(rel_err.abs() < 1e-14);
+    /// }
+    ///
+    /// // -100.0 to -0.5 in 0.5 increments
+    /// for x in (-200..0).map(|i| i as f64 * 0.5) {
+    ///     let p_e = x.ellip_e();
+    ///     let rg = (1.0 - x).carlson_rg(0.0, 1.0) * 2.0;
+    ///     let rel_err = (rg - p_e) / p_e;
+    ///     assert!(rel_err.abs() < 1e-14);
+    /// }
+    /// ```  
     fn ellip_e(&self) -> Self;
 
     /// Complete elliptic integral of the first kind
@@ -1257,7 +1303,46 @@ pub trait Ellip: Sized {
     ///     assert!(rel_err.abs() < 1e-15);
     /// }
     /// ```    
+    ///
+    /// Association with Carlson's symmetric elliptic integral of the 
+    /// first kind ([DLMF 19.25.1](https://dlmf.nist.gov/19.25#E1))
+    ///
+    /// ```
+    /// use spec_math::Ellip;
+    ///
+    /// // 0.0 to 0.99 in 0.01 increments
+    /// for x in (0..100).map(|i| i as f64 * 0.01) {
+    ///     let p_k = x.ellip_k();
+    ///     let rf = (1.0 - x).carlson_rf(0.0, 1.0);
+    ///     let rel_err = (rf - p_k) / p_k;
+    ///     assert!(rel_err.abs() < 1e-15);
+    /// }
+    ///
+    /// // -100.0 to -0.5 in 0.5 increments
+    /// for x in (-200..0).map(|i| i as f64 * 0.5) {
+    ///     let p_k = x.ellip_k();
+    ///     let rf = (1.0 - x).carlson_rf(0.0, 1.0);
+    ///     let rel_err = (rf - p_k) / p_k;
+    ///     assert!(rel_err.abs() < 1e-15);
+    /// }
+    /// ```      
     fn ellip_k(&self) -> Self;
+
+    /// Complete elliptic integral of the third kind
+    ///
+    /// # Description:
+    ///
+    /// Approximates the complete elliptic integral of the third kind 
+    /// with `self` as the k squared term.
+    ///
+    /// [Wikipedia](https://en.wikipedia.org/wiki/Elliptic_integral#Complete_elliptic_integral_of_the_third_kind)
+    ///
+    /// # Domain:
+    ///
+    /// Function returns `NAN` if `n == 1.0` or `self >= 1.0`
+    ///
+    /// # Examples:
+    fn ellip_pi(&self, n: Self) -> Self;
 
     /// Incomplete elliptic integral of the second kind
     ///
@@ -1267,6 +1352,40 @@ pub trait Ellip: Sized {
     /// with `self` as the k squared term.
     ///
     /// [Wikipedia](https://en.wikipedia.org/wiki/Elliptic_integral#Incomplete_elliptic_integral_of_the_second_kind)
+    ///
+    /// # Examples:
+    ///
+    /// Association with Carlson's symmetric elliptic integral of the 
+    /// first kind and Carlson's elliptic integral symmetric in only 
+    /// two variables ([DLMF 19.25.9](https://dlmf.nist.gov/19.25#E9)):
+    ///
+    /// ```
+    /// use spec_math::Ellip;
+    ///
+    /// // 0.1 to 1.5 in 0.1 increments
+    /// for phi in (1..=15).map(|i| i as f64 * 0.1) {
+    ///     let c = phi.sin().powi(-2);
+    ///     // 0.0 to 0.99 in 0.01 increments
+    ///     for x in (0..100).map(|i| i as f64 * 0.01) {
+    ///         let p_k = x.ellip_e_inc(phi);
+    ///         let rf = (c - x).carlson_rf(c, c - 1.0);
+    ///         let rd = (c - 1.0).carlson_rd(c - x, c);
+    ///         let carl = rf - x * rd / 3.0;
+    ///         let rel_err = (carl - p_k) / p_k;
+    ///         assert!(rel_err.abs() < 2e-15);
+    ///     }
+    ///
+    ///     // -100.0 to -0.5 in 0.5 increments
+    ///     for x in (-200..0).map(|i| i as f64 * 0.5) {
+    ///         let p_k = x.ellip_e_inc(phi);
+    ///         let rf = (c - x).carlson_rf(c, c - 1.0);
+    ///         let rd = (c - 1.0).carlson_rd(c - x, c);
+    ///         let carl = rf - x * rd / 3.0;
+    ///         let rel_err = (carl - p_k) / p_k;
+    ///         assert!(rel_err.abs() < 2e-15);
+    ///     }
+    /// }
+    /// ``` 
     fn ellip_e_inc(&self, phi: Self) -> Self;
 
     /// Incomplete elliptic integral of the first kind
@@ -1280,10 +1399,157 @@ pub trait Ellip: Sized {
     ///
     /// # Domain:
     ///
-    /// Returns `NAN` if either paramter is `NAN`, if 'self > 1.0`, or 
-    /// if both paramters are infinite. Returns infinity is `self == 1.0`
+    /// Returns `NAN` if either paramter is `NAN`, if `self > 1.0`, or 
+    /// if both paramters are infinite. Returns infinity if `self == 1.0`
     /// and phi is outside of `[-pi / 2, pi / 2]`
+    ///
+    /// # Examples:
+    ///
+    /// Association with Carlson's symmetric elliptic integral of the 
+    /// first kind ([DLMF 19.25.5](https://dlmf.nist.gov/19.25#E5)):
+    ///
+    /// ```
+    /// use spec_math::Ellip;
+    ///
+    /// // 0.1 to 1.5 in 0.1 increments
+    /// for phi in (1..=15).map(|i| i as f64 * 0.1) {
+    ///     let c = phi.sin().powi(-2);
+    ///     // 0.0 to 0.99 in 0.01 increments
+    ///     for x in (0..100).map(|i| i as f64 * 0.01) {
+    ///         let p_k = x.ellip_k_inc(phi);
+    ///         let rf = (c - x).carlson_rf(c, c - 1.0);
+    ///         let rel_err = (rf - p_k) / p_k;
+    ///         assert!(rel_err.abs() < 1e-14);
+    ///     }
+    ///
+    ///     // -100.0 to -0.5 in 0.5 increments
+    ///     for x in (-200..0).map(|i| i as f64 * 0.5) {
+    ///         let p_k = x.ellip_k_inc(phi);
+    ///         let rf = (c - x).carlson_rf(c, c - 1.0);
+    ///         let rel_err = (rf - p_k) / p_k;
+    ///         assert!(rel_err.abs() < 1e-14);
+    ///     }
+    /// }
+    /// ``` 
     fn ellip_k_inc(&self, phi: Self) -> Self;
+
+    /// Incomplete elliptic integral of the third kind
+    ///
+    /// # Description:
+    ///
+    /// Approximates the incomplete elliptic integral of the third kind 
+    /// with `self` as the k squared term.
+    ///
+    /// [Wikipedia](https://en.wikipedia.org/wiki/Elliptic_integral#Incomplete_elliptic_integral_of_the_third_kind)
+    /// ``` 
+    fn ellip_pi_inc(&self, phi: Self, n: Self) -> Self;
+
+    /// Degenerate Carlson symmetric elliptic integral of the first kind
+    ///
+    /// # Domain:
+    ///
+    /// Returns `NAN` if `x < 0.0` and infinity if `y == 0.0`.
+    ///
+    /// # Examples
+    ///
+    /// Specific values:
+    ///
+    /// ```
+    /// use spec_math::Ellip;
+    ///
+    /// // RC(0, 1/4) = pi
+    /// assert_eq!((0.0_f64).carlson_rc(0.25), std::f64::consts::PI);
+    ///
+    /// // RC(9/4, 2) == ln(2)
+    /// let a = (9.0 / 4.0).carlson_rc(2.0);
+    /// let b = (2.0_f64).ln();
+    /// assert!((a - b).abs() < 1e-15);
+    ///
+    /// // RC(1/4, -2) = ln(2) / 3
+    /// let a = (0.25_f64).carlson_rc(-2.0);
+    /// let b = (2.0_f64).ln() / 3.0;
+    /// assert!((a - b).abs() < 1e-15);
+    /// ```
+    fn carlson_rc(&self, y: Self) -> Self;
+
+    /// Carlson elliptic integral symmetric in only two variables
+    ///
+    /// # Domain
+    ///
+    /// Returns `NAN` if any paramters are less than zero and infinity if
+    /// two or more of the paramters are equal to zero.
+    fn carlson_rd(&self, y: Self, z: Self) -> Self;
+
+    /// Carlson symmetric elliptic integral of the first kind
+    ///
+    /// # Domain
+    ///
+    /// Returns `NAN` if any paramters are less than zero and infinity if
+    /// two or more of the paramters are equal to zero.
+    /// 
+    /// # Examples:
+    ///
+    /// Special values:
+    ///
+    /// ```
+    /// use spec_math::Ellip;
+    ///
+    /// // First lemniscate constant
+    /// let a: f64 = 1.3110287771461;
+    /// let a_calc = (0.0_f64).carlson_rf(1.0, 2.0);
+    /// let err = (a - a_calc) / a;
+    ///
+    /// assert!(err < 1e-13);
+    /// ```
+    ///
+    /// Degeneracy ([DLMF 19.20(i)](https://dlmf.nist.gov/19.20#i)):
+    ///
+    /// ```
+    /// use spec_math::Ellip;
+    ///
+    /// // 0.5 to 50 in increments of 0.5
+    /// for y in (1..=100).map(|i| i as f64 * 0.5) {
+    ///     // RF(0, y, y) = pi/2 / sqrt(y)
+    ///     let a1 = (0.0_f64).carlson_rf(y, y);
+    ///     let a2 = y.carlson_rf(y, 0.0);
+    ///     let a3 = y.carlson_rf(0.0, y);
+    ///     let b = std::f64::consts::FRAC_PI_2 / y.sqrt();
+    ///     assert!((b - a1) / b < 1e-15);
+    ///     assert!((b - a2) / b < 1e-15);
+    ///     assert!((b - a3) / b < 1e-15);
+    /// }
+    /// ```
+    fn carlson_rf(&self, y: Self, z: Self) -> Self;
+
+    /// Carlson symmetric elliptic integral of the second kind
+    ///
+    /// # Domain
+    ///
+    /// Returns `NAN` if any paramters are less than zero and infinity if
+    /// two or more of the paramters are equal to zero.
+    ///
+    /// # Examples
+    ///
+    /// Specific values:
+    ///
+    /// ```
+    /// use spec_math::Ellip;
+    ///
+    /// // RG(0, 16, 16) = pi
+    /// let a = (0.0_f64).carlson_rg(16.0, 16.0);
+    /// let b = std::f64::consts::PI;
+    /// assert!((a - b).abs() < 1e15);
+    /// ```
+    fn carlson_rg(&self, y: Self, z: Self) -> Self;
+
+    /// Carlson symmetric elliptic integral of the third kind
+    ///
+    /// # Domain
+    ///
+    /// Returns `NAN` if `self`, `y`, or `z` are less than zero and infinity if
+    /// two or more of `self`, `y`, and `z` are equal to zero or `p` is equal 
+    /// to zero.
+    fn carlson_rj(&self, y: Self, z: Self, p: Self) -> Self;
 }
 
 impl Ellip for f64 {
@@ -1300,6 +1566,9 @@ impl Ellip for f64 {
         //! Uses [`cephes64::ellpk`](crate::cephes64::ellpk) evaluated at `1.0 - self`
         crate::cephes64::ellpk(1.0 - *self)
     }
+    fn ellip_pi(&self, n: f64) -> f64 {
+        crate::misc::ellippi(n, *self)
+    }
     fn ellip_e_inc(&self, phi: f64) -> f64 {
         //! Uses [`cephes64::ellie`](crate::cephes64::ellie)
         crate::cephes64::ellie(phi, *self)
@@ -1307,6 +1576,24 @@ impl Ellip for f64 {
     fn ellip_k_inc(&self, phi: f64) -> f64 {
         //! Uses [`cephes64::ellik`](crate::cephes64::ellik)
         crate::cephes64::ellik(phi, *self)
+    }
+    fn ellip_pi_inc(&self, phi: f64, n: f64) -> f64 {
+        crate::misc::ellippi_inc(phi, *self, n)
+    }
+    fn carlson_rc(&self, y: f64) -> f64 {
+        crate::misc::elliprc(*self, y)
+    }
+    fn carlson_rd(&self, y: f64, z: f64) -> f64 {
+        crate::misc::elliprd(*self, y, z)
+    }
+    fn carlson_rf(&self, y: f64, z: f64) -> f64 {
+        crate::misc::elliprf(*self, y, z)
+    }
+    fn carlson_rg(&self, y: f64, z: f64) -> f64 {
+        crate::misc::elliprg(*self, y, z)
+    }
+    fn carlson_rj(&self, y: f64, z: f64, p: f64) -> f64 {
+        crate::misc::elliprj(*self, y, z, p)
     }
 }
 
