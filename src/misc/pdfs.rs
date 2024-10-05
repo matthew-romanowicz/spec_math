@@ -118,6 +118,22 @@ pub fn gamma_pdf(a: f64, b: f64, x: f64) -> f64 {
     }
 }
 
+pub fn t_pdf(v: f64, x: f64) -> f64 {
+    //! Student's t distribution probability density function
+
+    // TODO: Add tests for this
+
+    if v <= 0.0 {
+        f64::NAN
+    } else {
+        // let log_pdf = lgam(0.5 * (v + 1.0)) 
+        //     - 0.5 * (v + 1.0) * (1.0 + x * x / v).ln()
+        //     - 0.5 * (std::f64::consts::PI * v).ln() - lgam(0.5 * v);
+        let log_pdf = -lbeta(0.5, 0.5 * v) - 0.5 * (v.ln() + (v + 1.0) * (1.0 + x * x / v).ln());
+        log_pdf.exp()
+    }
+}
+
 #[cfg(test)]
 mod norm_pdf_tests {
     use super::*;
@@ -277,6 +293,60 @@ mod f_pdf_tests {
     fn f_pdf_values() {
         assert_eq!(f_pdf(2.0, 2.0, 2.0), 0.11111111111111115);
         assert_eq!(f_pdf(1e10, 1e-5, 1e10), 4.999187035248361e-16);
+    }
+}
+
+#[cfg(test)]
+mod t_pdf_tests {
+    use super::*;
+
+    #[test]
+    fn t_pdf_trivials() {
+        assert_eq!(t_pdf(1.0, f64::INFINITY), 0.0);
+        assert_eq!(t_pdf(1.0, -f64::INFINITY), 0.0);
+        assert!(t_pdf(-1e-10, 0.0).is_nan());
+    }
+
+    #[test]
+    fn t_pdf_values() {
+        assert_eq!(t_pdf(0.5, 0.0), 0.2696763005941897);
+        assert_eq!(t_pdf(0.5, 5.0), 0.014130747946566194);
+        assert_eq!(t_pdf(0.5, -5.0), 0.014130747946566194);
+
+        assert_eq!(t_pdf(1.0, 0.0), 0.31830988618379075);
+
+        assert_eq!(t_pdf(1.0, 0.5), 0.2546479089470326);
+        assert_eq!(t_pdf(1.0, 5.0), 0.01224268793014579);
+        assert_eq!(t_pdf(1.0, 1e10), 3.183098861837902e-21);
+        // TODO: accuracy diverges
+        assert_eq!(t_pdf(1.0, 1e100), 3.1830988618377892e-201);
+
+        assert_eq!(t_pdf(1.0, -0.5), 0.2546479089470326);
+        assert_eq!(t_pdf(1.0, -5.0), 0.01224268793014579);
+        assert_eq!(t_pdf(1.0, -1e10), 3.183098861837902e-21);
+        // TODO: accuracy diverges
+        assert_eq!(t_pdf(1.0, -1e100), 3.1830988618377892e-201);
+
+        assert_eq!(t_pdf(10.0, 0.0), 0.389108383966031);
+
+        assert_eq!(t_pdf(10.0, 0.5), 0.3396951363520779);
+        assert_eq!(t_pdf(10.0, 5.0), 0.00039600105646379864);
+        assert_eq!(t_pdf(10.0, 1e10), 1.230468749999983e-105);
+
+        assert_eq!(t_pdf(10.0, -0.5), 0.3396951363520779);
+        assert_eq!(t_pdf(10.0, -5.0), 0.00039600105646379864);
+        assert_eq!(t_pdf(10.0, -1e10), 1.230468749999983e-105);
+
+        // TODO: Accuracy diverges
+        assert_eq!(t_pdf(100.0, 0.0), 0.39794618693589373);
+
+        assert_eq!(t_pdf(100.0, 0.5), 0.35080283339233126);
+        assert_eq!(t_pdf(100.0, 5.0), 5.08005823472728e-6);
+        assert_eq!(t_pdf(100.0, 1e3), 3.959417244408068e-203);
+
+        assert_eq!(t_pdf(100.0, -0.5), 0.35080283339233126);
+        assert_eq!(t_pdf(100.0, -5.0), 5.08005823472728e-6);
+        assert_eq!(t_pdf(100.0, -1e3), 3.959417244408068e-203);
     }
 }
 
