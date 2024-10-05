@@ -1,6 +1,6 @@
 [package]
 name = "spec_math"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 documentation = "https://docs.rs/spec_math"
