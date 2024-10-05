@@ -884,6 +884,32 @@ pub trait Gamma {
     /// }
     /// ```
     fn rgamma(&self) -> Self;
+
+    /// Pochhammer Symbol
+    ///
+    /// # Description
+    ///
+    /// Approximates the value of the [Pochhammer symbol](https://mathworld.wolfram.com/PochhammerSymbol.html)
+    ///
+    /// # Examples
+    ///
+    /// Association with gamma:
+    ///
+    /// ```
+    /// use spec_math::Gamma;
+    ///
+    /// // 0.5 to 15 in increments of 0.5
+    /// for x in (1..=30).map(|i| i as f64 * 0.5) {
+    ///     // 0 to 5 in increments of 1.0
+    ///     for n in (0..5).map(|i| i as f64) {
+    ///         let a = x.poch(n);
+    ///         let b = (x + n).gamma() / x.gamma();
+    ///         let err = (a - b) / a;
+    ///         assert!(err < 1e-15);
+    ///     }
+    /// }
+    /// ```
+    fn poch(&self, n: Self) -> Self;
 }
 
 impl Gamma for f64 {
@@ -918,6 +944,9 @@ impl Gamma for f64 {
     fn rgamma(&self) -> f64 {
         //! Uses [`cephes64::rgamma`](crate::cephes64::rgamma)
         crate::cephes64::rgamma(*self)
+    }
+    fn poch(&self, n: f64) -> f64 {
+        crate::misc::poch(*self, n)
     }
 }
 
