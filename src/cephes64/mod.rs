@@ -101,3 +101,5 @@ mod k1;
 pub use crate::cephes64::k1::{k1, k1e};
 mod kn;
 pub use crate::cephes64::kn::kn;
+mod ei;
+pub use crate::cephes64::ei::ei;
