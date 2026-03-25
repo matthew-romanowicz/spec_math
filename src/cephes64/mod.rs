@@ -7,6 +7,8 @@ mod consts;
 pub use crate::cephes64::consts::*;
 mod cbrt;
 pub use crate::cephes64::cbrt::cbrt;
+mod fac;
+pub use crate::cephes64::fac::fac;
 mod sinpi;
 pub use crate::cephes64::sinpi::{sinpi, cospi};
 mod polevl;
