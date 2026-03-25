@@ -92,7 +92,7 @@ pub fn spence(x: f64) -> f64 {
         } else {
             x - 1.0
         };
-
+        
 
         let mut y = -w * polevl(w, &A, 7) / polevl(w, &B, 7);
 
@@ -152,6 +152,11 @@ mod spence_tests {
         assert_eq!(spence(0.8), 0.21100377543970478);
         assert_eq!(spence(0.9), 0.1026177910993911);
         assert_eq!(spence(1.0), 0.0);
+        assert_eq!(spence(1.1), -0.09760523522932167);
+        assert_eq!(spence(1.2), -0.19080013777753554);
+        assert_eq!(spence(1.3), -0.280074333759583);
+        assert_eq!(spence(1.4), -0.3658325775124495);
+        assert_eq!(spence(1.5), -0.4484142069236462);
     }
 
     #[test]
