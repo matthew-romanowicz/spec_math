@@ -121,34 +121,27 @@ pub fn fac(i: usize) -> f64 {
     //! </tr>
     //!</table>
  
-
-    if ( i > MAXFAC ) {
-        // mtherr( "fac", OVERFLOW );
-        // return( MAXNUM );
-        return f64::INFINITY;
-	}
-
-    /* Get answer from table for small i. */
-    if ( i < 34 )
-	{
-	    return FACTBL[i];
-	}
-    /* Use gamma function for large i. */
-    if ( i > 55 )
-    {
-        let x = i + 1;
-        return gamma(x as f64);
+    match i {
+        0..34 => {
+            // Get answer from table for small i.
+            FACTBL[i]
+        }, 
+        34..56 => {
+            // Compute directly for intermediate i.
+            let mut n = 34.0;
+            let mut f = 34.0;
+            for _j in 35..=i {
+                n += 1.0;
+                f *= n;
+            }
+            f * FACTBL[33]
+        },
+        56..=MAXFAC => {
+            // Use gamma function for large i
+            gamma((i + 1) as f64)
+        }, 
+        _ => f64::INFINITY
     }
-    /* Compute directly for intermediate i. */
-    let mut n = 34.0;
-    let mut f = 34.0;
-    for j in 35..=i //( j=35; j<=i; j++ )
-    {
-        n += 1.0;
-        f *= n;
-    }
-    f *= FACTBL[33];
-    return f;
 }
 
 #[cfg(test)]
